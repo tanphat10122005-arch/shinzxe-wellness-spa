@@ -1246,60 +1246,7 @@ img {
   pointer-events: auto;
 }
 
-/* ================= RESPONSIVE QUERIES ================= */
-@media (max-width: 992px) {
-  .hero-section {
-    grid-template-columns: 1fr;
-    text-align: center;
-    padding-top: 40px;
-    gap: 40px;
-  }
-  .hero-title {
-    font-size: 2.8rem;
-  }
-  .hero-cta {
-    justify-content: center;
-  }
-  .hero-stats {
-    justify-content: center;
-  }
-  .hero-desc {
-    margin: 0 auto 34px;
-  }
-  .hero-img-main {
-    height: 400px;
-  }
-  .floating-card {
-    left: 20px;
-  }
-  .footer-content {
-    grid-template-columns: 1fr 1fr;
-    gap: 36px;
-  }
-}
-
-@media (max-width: 768px) {
-  .nav-links, .nav-actions .btn-admin-link {
-    display: none;
-  }
-  .mobile-menu-btn {
-    display: block;
-  }
-  .hero-title {
-    font-size: 2.3rem;
-  }
-  .hero-stats {
-    flex-wrap: wrap;
-    gap: 24px;
-  }
-  .footer-content {
-    grid-template-columns: 1fr;
-  }
-  .ai-chat-box {
-    width: 320px;
-    right: -10px;
-  }
-}
+/* (Responsive rules moved to end of stylesheet for cascade priority) */
 
 /* ================= NÂNG CẤP BANNER TRANG CHỦ TĨNH LẶNG (SERENE SPA BANNER) ================= */
 .hero-panoramic-banner {
@@ -1884,5 +1831,358 @@ img {
   background: var(--primary-subtle);
   border-color: var(--accent);
   color: var(--primary);
+}
+
+/* ==========================================================================
+   HỆ THỐNG GIAO DIỆN CÂN ĐỐI ĐA THIẾT BỊ (RESPONSIVE: MOBILE & DESKTOP)
+   ========================================================================== */
+
+/* Utility row 2 cột có tính co giãn */
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* 1. MÀN HÌNH MÁY TÍNH LỚN & VỪA (DESKTOP >= 1025px) */
+@media (min-width: 1025px) {
+  .hero-banner-inner {
+    padding: 80px 60px;
+  }
+  .hero-banner-inner .hero-title {
+    font-size: 3.5rem;
+    line-height: 1.25;
+  }
+  .services-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+  }
+  .staff-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .reviews-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+/* 2. MÀN HÌNH TABLET & LAPTOP NHỎ (769px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .hero-panoramic-banner {
+    padding: 0 20px;
+    margin-bottom: 40px;
+  }
+  .hero-banner-inner {
+    padding: 60px 40px;
+  }
+  .hero-banner-inner .hero-title {
+    font-size: 2.75rem;
+    line-height: 1.25;
+  }
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+  }
+  .staff-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .reviews-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+}
+
+/* 3. MÀN HÌNH ĐIỆN THOẠI DI ĐỘNG & TABLET DỌC (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Navbar trên điện thoại */
+  .nav-container {
+    padding: 12px 16px;
+  }
+  .nav-links,
+  .nav-actions .btn-admin-link,
+  .nav-actions .btn-primary {
+    display: none; /* Ẩn menu ngang và nút đặt lịch dài để tránh tràn navbar */
+  }
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo {
+    font-size: 1.15rem;
+    gap: 8px;
+  }
+  .logo-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+  .member-nav-btn {
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    gap: 4px;
+  }
+  .member-nav-btn #navMemberText {
+    display: none; /* Chỉ hiện icon vương miện trên mobile giúp thanh bar gọn gàng */
+  }
+  .nav-actions {
+    gap: 8px;
+  }
+
+  /* Banner Serene Hero trên mobile */
+  .hero-panoramic-banner {
+    padding: 0 12px;
+    margin-bottom: 30px;
+  }
+  .hero-banner-inner {
+    padding: 38px 18px 32px;
+    border-radius: var(--radius-lg);
+  }
+  .hero-banner-inner .badge-tag {
+    font-size: 0.72rem;
+    padding: 5px 12px;
+    margin-bottom: 12px;
+    max-width: 100%;
+    line-height: 1.4;
+  }
+  .hero-banner-inner .hero-title {
+    font-size: clamp(1.65rem, 6.2vw, 2.15rem);
+    line-height: 1.3;
+    margin-bottom: 14px;
+  }
+  .hero-banner-inner .hero-desc {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0 auto 24px;
+  }
+  .hero-banner-inner .hero-cta {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 330px;
+    gap: 10px;
+    margin: 0 auto;
+  }
+  .hero-banner-inner .hero-cta .btn {
+    width: 100%;
+    padding: 13px 20px !important;
+    font-size: 0.94rem !important;
+    justify-content: center;
+  }
+  .hero-banner-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 26px;
+    padding-top: 20px;
+    width: 100%;
+  }
+  .hero-feature-item {
+    font-size: 0.75rem;
+    padding: 7px 8px;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  /* Khoảng cách Section trên Mobile */
+  .section {
+    padding: 45px 16px;
+  }
+  .section-header {
+    margin-bottom: 28px;
+  }
+  .section-subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: clamp(1.65rem, 5.5vw, 2.05rem);
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .section-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  /* Thanh lọc danh mục vuốt ngang mượt mà kiểu App di động */
+  .category-filter {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 4px 16px 14px;
+    margin: 0 -16px 24px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 8px;
+  }
+  .category-filter::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-btn {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    font-size: 0.84rem;
+    white-space: nowrap;
+  }
+
+  /* Lưới thẻ Dịch vụ & Sản phẩm trên điện thoại */
+  .services-grid,
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .service-card,
+  .product-card {
+    max-width: 440px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .service-img-wrapper,
+  .product-img-wrapper {
+    height: 190px;
+  }
+  .service-content,
+  .product-content {
+    padding: 18px 20px;
+  }
+  .service-name,
+  .product-name {
+    font-size: 1.15rem;
+  }
+
+  /* Đội ngũ chuyên gia & Đánh giá */
+  .staff-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+  #specialists.section {
+    border-radius: var(--radius-lg);
+    margin-bottom: 40px;
+    padding: 35px 16px;
+  }
+  #reviews .section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px;
+  }
+  .reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Tối ưu toàn bộ Modal trên điện thoại */
+  .modal-overlay {
+    padding: 10px;
+    align-items: flex-end; /* Trượt từ dưới lên dễ chạm bằng 1 tay */
+  }
+  .modal-container {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 12px 12px !important;
+  }
+  .modal-header {
+    padding: 16px 20px 12px;
+  }
+  .modal-title {
+    font-size: 1.2rem;
+  }
+  .modal-body {
+    padding: 16px 16px 22px;
+  }
+  .form-row-2col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .slots-container {
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    gap: 7px;
+  }
+  .slot-btn {
+    padding: 9px 4px;
+    font-size: 0.8rem;
+  }
+  .booking-coupon-box {
+    padding: 12px !important;
+  }
+
+  /* Nút nổi (Floating Cart & Trợ lý AI) */
+  .btn-floating-cart {
+    bottom: 80px;
+    right: 14px;
+    padding: 9px 15px;
+    font-size: 0.82rem;
+  }
+  .ai-chat-btn {
+    bottom: 18px;
+    right: 14px;
+    padding: 9px 16px;
+    font-size: 0.84rem;
+  }
+  .ai-chat-box {
+    position: fixed;
+    inset: auto 12px 72px 12px;
+    width: auto;
+    max-width: 390px;
+    margin: 0 auto;
+    right: 12px;
+    left: 12px;
+  }
+
+  /* Chân trang */
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 40px 16px 20px;
+    text-align: left;
+  }
+  .cart-drawer {
+    max-width: 100%;
+  }
+}
+
+/* 4. MÀN HÌNH ĐIỆN THOẠI CỠ NHỎ (max-width: 480px) */
+@media (max-width: 480px) {
+  .hero-banner-features {
+    grid-template-columns: 1fr;
+  }
+  .service-actions-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btn-detail-link,
+  .btn-book-quick {
+    width: 100%;
+    padding: 10px;
+    justify-content: center;
+  }
+  .booking-coupon-box label {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 4px;
+  }
 }
 

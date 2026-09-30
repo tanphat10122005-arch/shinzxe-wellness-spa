@@ -138,7 +138,7 @@
       "originalPrice": 550000,
       "discountAmount": 55000,
       "discountCode": "SHINZXEVIP10",
-      "status": "confirmed",
+      "status": "cancelled",
       "note": "Áp dụng mã VIP test",
       "createdAt": "2026-09-30T04:50:50.887Z"
     },
@@ -155,7 +155,7 @@
       "date": "2026-09-30",
       "time": "10:30",
       "price": 550000,
-      "status": "confirmed",
+      "status": "cancelled",
       "note": "",
       "createdAt": "2026-09-30T04:40:33.091Z"
     },
@@ -172,7 +172,7 @@
       "date": "2026-09-30",
       "time": "08:30",
       "price": 520000,
-      "status": "completed",
+      "status": "cancelled",
       "note": "",
       "createdAt": "2026-09-30T04:35:03.436Z"
     },

@@ -221,7 +221,7 @@
           </div>
 
           <!-- Ngày & Khung giờ -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-row-2col">
             <div class="form-group">
               <label class="form-label"><i class="fa-regular fa-calendar" style="color: var(--accent);"></i> Chọn Ngày (*):</label>
               <input type="date" id="bookingDateInput" class="form-control" required onchange="fetchAvailableSlots()">
@@ -243,7 +243,7 @@
           </div>
 
           <!-- Thông tin khách hàng -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-row-2col">
             <div class="form-group">
               <label class="form-label"><i class="fa-solid fa-user" style="color: var(--accent);"></i> Họ và tên (*):</label>
               <input type="text" id="customerNameInput" class="form-control" placeholder="Nguyễn Văn A" required>
