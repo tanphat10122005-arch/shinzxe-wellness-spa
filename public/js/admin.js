@@ -544,7 +544,10 @@ function renderOrdersTable(orders) {
         <td><a href="tel:${o.customerPhone}" style="color: var(--admin-primary); font-weight: 600;">${o.customerPhone}</a></td>
         <td style="max-width: 200px; font-size: 0.85rem; line-height: 1.4;">${o.customerAddress || 'Chưa cung cấp'}</td>
         <td style="min-width: 180px;">${itemsHtml || 'Sản phẩm lẻ'}</td>
-        <td><strong style="color: #c5a059; font-size: 1rem;">${formatVND(o.totalAmount)}</strong></td>
+        <td>
+          <strong style="color: #c5a059; font-size: 1rem;">${formatVND(o.totalAmount)}</strong>
+          ${o.discountAmount > 0 ? `<br><span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;"><i class="fa-solid fa-tag"></i> -${formatVND(o.discountAmount)} (${o.discountCode || 'Mã'})</span>` : ''}
+        </td>
         <td style="font-size: 0.82rem; color: var(--admin-muted);">${o.note || 'Không có'}</td>
         <td>
           <span class="badge-status badge-${o.status || 'pending'}">

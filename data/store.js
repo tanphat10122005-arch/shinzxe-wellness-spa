@@ -404,6 +404,19 @@ const store = {
     const service = data.services.find(s => s.id === parseInt(bookingInput.serviceId));
     const staff = data.staff.find(s => s.id === parseInt(bookingInput.staffId));
 
+    let cleanCouponCode = null;
+    let discountAmount = 0;
+
+    if (bookingInput.discountCode) {
+      cleanCouponCode = String(bookingInput.discountCode).trim().toUpperCase();
+      const usedCoupons = store.getMemberUsedCoupons(bookingInput.customerPhone);
+      if (usedCoupons.includes(cleanCouponCode)) {
+        throw new Error(`Mã giảm giá "${cleanCouponCode}" chỉ được áp dụng 1 lần duy nhất cho mỗi tài khoản và bạn đã sử dụng mã này rồi!`);
+      }
+      discountAmount = bookingInput.discountAmount || 0;
+      store.markCouponUsed(bookingInput.customerPhone, cleanCouponCode);
+    }
+
     // Sinh mã ngẫu nhiên dạng LM-XXXX
     const randomCode = 'LM-' + Math.floor(1000 + Math.random() * 9000);
 
@@ -419,10 +432,10 @@ const store = {
       staffName: staff ? staff.name : 'Chuyên viên ngẫu nhiên',
       date: bookingInput.date,
       time: bookingInput.time,
-      price: service ? (bookingInput.finalPrice != null ? bookingInput.finalPrice : service.price) : 0,
+      price: service ? (bookingInput.finalPrice != null ? bookingInput.finalPrice : Math.max(0, service.price - discountAmount)) : 0,
       originalPrice: service ? service.price : 0,
-      discountAmount: bookingInput.discountAmount || 0,
-      discountCode: bookingInput.discountCode || null,
+      discountAmount: discountAmount,
+      discountCode: cleanCouponCode,
       status: 'confirmed', // Tự động xác nhận
       note: bookingInput.note || '',
       createdAt: new Date().toISOString()
@@ -433,55 +446,147 @@ const store = {
     return newBooking;
   },
 
-  // Kiểm tra & áp dụng mã giảm giá
-  validateCoupon: (code, serviceId) => {
+  // Lấy danh sách các mã giảm giá mà thành viên (theo số điện thoại) đã sử dụng
+  getMemberUsedCoupons: (phone) => {
+    const data = readData();
+    const cleanPhone = String(phone || '').trim();
+    if (!cleanPhone) return [];
+
+    const member = (data.members || []).find(m => m.phone === cleanPhone);
+    const memberCoupons = (member && Array.isArray(member.usedCoupons))
+      ? member.usedCoupons.map(c => String(c).trim().toUpperCase())
+      : [];
+
+    // Lọc từ các lịch hẹn chưa bị hủy
+    const bookingCoupons = (data.bookings || [])
+      .filter(b => b.customerPhone === cleanPhone && b.status !== 'cancelled' && b.discountCode)
+      .map(b => String(b.discountCode).trim().toUpperCase());
+
+    // Lọc từ các đơn hàng chưa bị hủy
+    const orderCoupons = (data.orders || [])
+      .filter(o => o.customerPhone === cleanPhone && o.status !== 'cancelled' && o.discountCode)
+      .map(o => String(o.discountCode).trim().toUpperCase());
+
+    return Array.from(new Set([...memberCoupons, ...bookingCoupons, ...orderCoupons]));
+  },
+
+  // Đánh dấu mã giảm giá đã được thành viên sử dụng
+  markCouponUsed: (phone, couponCode) => {
+    const cleanPhone = String(phone || '').trim();
+    const cleanCode = String(couponCode || '').trim().toUpperCase();
+    if (!cleanPhone || !cleanCode) return;
+
+    const data = readData();
+    const member = (data.members || []).find(m => m.phone === cleanPhone);
+    if (member) {
+      if (!Array.isArray(member.usedCoupons)) {
+        member.usedCoupons = [];
+      }
+      if (!member.usedCoupons.includes(cleanCode)) {
+        member.usedCoupons.push(cleanCode);
+        writeData(data);
+      }
+    }
+  },
+
+  // Lấy trạng thái danh sách mã giảm giá cho thành viên
+  getMemberCouponsStatus: (phone) => {
+    const cleanPhone = String(phone || '').trim();
+    const usedCodes = store.getMemberUsedCoupons(cleanPhone);
+    const allCoupons = [
+      {
+        code: 'SHINZXEVIP10',
+        name: 'VIP Privilege - Giảm 10%',
+        description: 'Giảm 10% tổng hóa đơn đặt lịch hoặc mua hàng',
+        type: 'percent',
+        value: 10
+      },
+      {
+        code: 'SHINZXE100K',
+        name: 'Voucher Khách Quý - Giảm 100.000đ',
+        description: 'Giảm ngay 100.000đ trực tiếp vào hóa đơn',
+        type: 'fixed',
+        value: 100000
+      },
+      {
+        code: 'WELLNESS20',
+        name: 'Tri Ân Khách Hàng - Giảm 20%',
+        description: 'Ưu đãi đặc biệt giảm 20% cho thành viên',
+        type: 'percent',
+        value: 20
+      }
+    ].map(c => ({
+      ...c,
+      isUsed: usedCodes.includes(c.code)
+    }));
+
+    return {
+      usedCodes,
+      allCoupons,
+      availableCoupons: allCoupons.filter(c => !c.isUsed)
+    };
+  },
+
+  // Kiểm tra & áp dụng mã giảm giá (Mỗi tài khoản chỉ được sử dụng 1 lần)
+  validateCoupon: (code, serviceId, phone, orderAmount) => {
     const data = readData();
     const cleanCode = String(code || '').trim().toUpperCase();
-    const service = data.services.find(s => s.id === parseInt(serviceId));
-    const basePrice = service ? service.price : 0;
+    const cleanPhone = String(phone || '').trim();
 
     if (!cleanCode) {
       return { success: false, message: 'Vui lòng nhập mã giảm giá!' };
     }
 
-    if (cleanCode === 'SHINZXEVIP10') {
-      const discountAmount = Math.round(basePrice * 0.1);
-      return {
-        success: true,
-        code: cleanCode,
-        discountType: 'percent',
-        percent: 10,
-        discountAmount,
-        originalPrice: basePrice,
-        finalPrice: Math.max(0, basePrice - discountAmount),
-        message: 'Áp dụng mã VIP thành công: Giảm 10% tổng hóa đơn!'
-      };
-    } else if (cleanCode === 'SHINZXE100K') {
-      const discountAmount = Math.min(100000, basePrice);
-      return {
-        success: true,
-        code: cleanCode,
-        discountType: 'fixed',
-        discountAmount,
-        originalPrice: basePrice,
-        finalPrice: Math.max(0, basePrice - discountAmount),
-        message: 'Áp dụng Voucher thành công: Giảm ngay 100.000đ!'
-      };
-    } else if (cleanCode === 'WELLNESS20') {
-      const discountAmount = Math.round(basePrice * 0.2);
-      return {
-        success: true,
-        code: cleanCode,
-        discountType: 'percent',
-        percent: 20,
-        discountAmount,
-        originalPrice: basePrice,
-        finalPrice: Math.max(0, basePrice - discountAmount),
-        message: 'Áp dụng mã Tri Ân thành công: Giảm 20%!'
-      };
+    const couponDefinitions = {
+      'SHINZXEVIP10': { type: 'percent', percent: 10, name: 'VIP Privilege - Giảm 10%' },
+      'SHINZXE100K': { type: 'fixed', amount: 100000, name: 'Voucher Khách Quý - Giảm 100.000đ' },
+      'WELLNESS20': { type: 'percent', percent: 20, name: 'Tri Ân Khách Hàng - Giảm 20%' }
+    };
+
+    const couponDef = couponDefinitions[cleanCode];
+    if (!couponDef) {
+      return { success: false, message: 'Mã giảm giá không hợp lệ hoặc đã hết hạn!' };
     }
 
-    return { success: false, message: 'Mã giảm giá không hợp lệ hoặc đã hết hạn!' };
+    // Kiểm tra quy tắc 1 lần / 1 tài khoản
+    if (cleanPhone) {
+      const usedCoupons = store.getMemberUsedCoupons(cleanPhone);
+      if (usedCoupons.includes(cleanCode)) {
+        return {
+          success: false,
+          isAlreadyUsed: true,
+          code: cleanCode,
+          message: `Mã ưu đãi "${cleanCode}" chỉ được áp dụng 1 lần duy nhất cho mỗi tài khoản. Tài khoản (${cleanPhone}) của bạn đã sử dụng mã này rồi!`
+        };
+      }
+    }
+
+    let basePrice = 0;
+    if (serviceId) {
+      const service = data.services.find(s => s.id === parseInt(serviceId));
+      basePrice = service ? service.price : 0;
+    } else if (orderAmount != null) {
+      basePrice = parseInt(orderAmount) || 0;
+    }
+
+    let discountAmount = 0;
+    if (couponDef.type === 'percent') {
+      discountAmount = Math.round(basePrice * (couponDef.percent / 100));
+    } else if (couponDef.type === 'fixed') {
+      discountAmount = Math.min(couponDef.amount, basePrice);
+    }
+
+    return {
+      success: true,
+      code: cleanCode,
+      name: couponDef.name,
+      discountType: couponDef.type,
+      percent: couponDef.percent,
+      discountAmount,
+      originalPrice: basePrice,
+      finalPrice: Math.max(0, basePrice - discountAmount),
+      message: `Áp dụng thành công mã ${cleanCode}: ${couponDef.name}`
+    };
   },
 
   // Tra cứu lịch theo mã hoặc số điện thoại
@@ -635,6 +740,19 @@ const store = {
 
   createOrder: (orderData) => {
     const data = readData();
+    let cleanCouponCode = null;
+    let discountAmount = 0;
+
+    if (orderData.discountCode) {
+      cleanCouponCode = String(orderData.discountCode).trim().toUpperCase();
+      const usedCoupons = store.getMemberUsedCoupons(orderData.customerPhone);
+      if (usedCoupons.includes(cleanCouponCode)) {
+        throw new Error(`Mã giảm giá "${cleanCouponCode}" chỉ được áp dụng 1 lần duy nhất cho mỗi tài khoản và bạn đã sử dụng mã này rồi!`);
+      }
+      discountAmount = orderData.discountAmount || 0;
+      store.markCouponUsed(orderData.customerPhone, cleanCouponCode);
+    }
+
     const newOrder = {
       id: (data.orders.length ? Math.max(...data.orders.map(o => o.id)) : 0) + 1,
       orderCode: 'OD-' + Math.floor(1000 + Math.random() * 9000),
@@ -644,6 +762,9 @@ const store = {
       note: orderData.note || '',
       items: orderData.items || [],
       totalAmount: orderData.totalAmount || 0,
+      originalAmount: orderData.originalAmount || (orderData.totalAmount + discountAmount),
+      discountCode: cleanCouponCode,
+      discountAmount: discountAmount,
       status: 'pending',
       createdAt: new Date().toISOString()
     };

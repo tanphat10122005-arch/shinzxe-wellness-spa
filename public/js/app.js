@@ -12,6 +12,8 @@ let state = {
   selectedServiceId: null,
   selectedSlotTime: null,
   appliedBookingCoupon: null,
+  appliedOrderCoupon: null,
+  memberCoupons: null,
   pendingAction: null
 };
 
@@ -312,8 +314,58 @@ function populateStaffSelect() {
   staffSelect.innerHTML = `<option value="">-- Bất kỳ chuyên viên nào (Phục vụ nhanh nhất) --</option>` + options;
 }
 
+// Lấy dữ liệu danh sách mã giảm giá của thành viên (xem mã nào đã dùng, mã nào khả dụng)
+async function fetchMemberCoupons(phone) {
+  if (!phone) return null;
+  try {
+    const res = await fetch(`/api/member/coupons?phone=${encodeURIComponent(phone)}`);
+    const json = await res.json();
+    if (json.success) {
+      state.memberCoupons = json.data;
+      return json.data;
+    }
+  } catch (err) {
+    console.error('Lỗi khi tải mã giảm giá thành viên:', err);
+  }
+  return null;
+}
+
+// Cập nhật gợi ý mã giảm giá trên form đặt lịch
+async function updateBookingCouponBadge() {
+  const badge = document.getElementById('couponHintBadge');
+  if (!badge) return;
+
+  if (!state.currentMember) {
+    badge.innerHTML = `Gợi ý: SHINZXEVIP10, SHINZXE100K`;
+    return;
+  }
+
+  const couponsData = await fetchMemberCoupons(state.currentMember.phone);
+  if (!couponsData) return;
+
+  const available = couponsData.availableCoupons || [];
+  if (available.length > 0) {
+    badge.innerHTML = `Khả dụng: ` + available.map(c => `
+      <span onclick="setBookingCoupon('${c.code}')" 
+            style="text-decoration: underline; cursor: pointer; font-weight: 700; margin-right: 4px;" title="Bấm để áp dụng">
+        ${c.code}
+      </span>
+    `).join(', ');
+  } else {
+    badge.innerHTML = `<span style="color: #b91c1c; font-weight: 600;"><i class="fa-solid fa-lock"></i> Đã dùng hết mã ưu đãi</span>`;
+  }
+}
+
+function setBookingCoupon(code) {
+  const input = document.getElementById('bookingCouponInput');
+  if (input) {
+    input.value = code;
+    applyBookingCoupon();
+  }
+}
+
 // ================= MODAL ĐẶT LỊCH ================= //
-function openBookingModal(serviceId = null, couponCode = null) {
+async function openBookingModal(serviceId = null, couponCode = null) {
   if (!state.currentMember) {
     showToast('Vui lòng đăng nhập tài khoản thành viên để đặt lịch hẹn!', 'info');
     state.pendingAction = { action: 'booking', serviceId, couponCode };
@@ -340,13 +392,21 @@ function openBookingModal(serviceId = null, couponCode = null) {
   if (phoneInput) phoneInput.value = state.currentMember.phone || '';
   if (emailInput && state.currentMember.email) emailInput.value = state.currentMember.email;
 
-  // Tự động điền mã giảm giá nếu có hoặc nếu là thành viên VIP
+  // Lấy danh sách ưu đãi của thành viên để chọn mã khả dụng
+  let codeToApply = couponCode || '';
+  if (!codeToApply && state.currentMember) {
+    const couponsData = await fetchMemberCoupons(state.currentMember.phone);
+    if (couponsData && couponsData.availableCoupons && couponsData.availableCoupons.length > 0) {
+      codeToApply = couponsData.availableCoupons[0].code;
+    }
+  }
+
   const couponInput = document.getElementById('bookingCouponInput');
-  const codeToApply = couponCode || (state.currentMember ? 'SHINZXEVIP10' : '');
   if (couponInput && codeToApply) {
     couponInput.value = codeToApply;
   }
 
+  updateBookingCouponBadge();
   fetchAvailableSlots();
   updateBookingPriceBreakdown();
 
@@ -371,7 +431,7 @@ function handleServiceSelectionChange() {
   }
 }
 
-// Kiểm tra & áp dụng mã giảm giá
+// Kiểm tra & áp dụng mã giảm giá (Gửi kèm số điện thoại để kiểm tra tài khoản đã dùng chưa)
 async function applyBookingCoupon() {
   const input = document.getElementById('bookingCouponInput');
   const code = (input ? input.value : '').trim().toUpperCase();
@@ -403,7 +463,11 @@ async function applyBookingCoupon() {
     const res = await fetch('/api/coupons/validate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, serviceId })
+      body: JSON.stringify({ 
+        code, 
+        serviceId,
+        phone: state.currentMember ? state.currentMember.phone : ''
+      })
     });
     const json = await res.json();
 
@@ -586,6 +650,10 @@ async function handleBookingSubmit(event) {
     const json = await res.json();
 
     if (json.success) {
+      state.appliedBookingCoupon = null;
+      if (state.currentMember) {
+        fetchMemberCoupons(state.currentMember.phone);
+      }
       showToast('Đặt lịch thành công!', 'success');
       showBookingSuccessTicket(json.data);
     } else {
@@ -1032,7 +1100,132 @@ function closeCartDrawer() {
   document.getElementById('cartDrawer')?.classList.remove('open');
 }
 
-function openOrderModal() {
+// Cập nhật gợi ý mã giảm giá trên form đặt mua sản phẩm
+async function updateOrderCouponBadge() {
+  const badge = document.getElementById('orderCouponHintBadge');
+  if (!badge) return;
+
+  if (!state.currentMember) {
+    badge.innerHTML = `Gợi ý: SHINZXEVIP10, SHINZXE100K`;
+    return;
+  }
+
+  const couponsData = await fetchMemberCoupons(state.currentMember.phone);
+  if (!couponsData) return;
+
+  const available = couponsData.availableCoupons || [];
+  if (available.length > 0) {
+    badge.innerHTML = `Khả dụng: ` + available.map(c => `
+      <span onclick="setOrderCoupon('${c.code}')" 
+            style="text-decoration: underline; cursor: pointer; font-weight: 700; margin-right: 4px;" title="Bấm để áp dụng">
+        ${c.code}
+      </span>
+    `).join(', ');
+  } else {
+    badge.innerHTML = `<span style="color: #b91c1c; font-weight: 600;"><i class="fa-solid fa-lock"></i> Đã dùng hết mã ưu đãi</span>`;
+  }
+}
+
+function setOrderCoupon(code) {
+  const input = document.getElementById('orderCouponInput');
+  if (input) {
+    input.value = code;
+    applyOrderCoupon();
+  }
+}
+
+function updateOrderPriceBreakdown() {
+  const totalItems = state.cart.reduce((sum, i) => sum + i.qty, 0);
+  const subtotal = state.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+  const itemCountEl = document.getElementById('orderItemCount');
+  if (itemCountEl) itemCountEl.innerText = `${totalItems} sản phẩm`;
+
+  const subtotalEl = document.getElementById('orderSubtotalAmount');
+  if (subtotalEl) subtotalEl.innerText = formatVND(subtotal);
+
+  const discountRow = document.getElementById('orderDiscountRow');
+  const discountLabel = document.getElementById('orderDiscountLabel');
+  const discountAmountText = document.getElementById('orderDiscountAmountText');
+  const finalAmountEl = document.getElementById('orderFinalAmount');
+
+  let discountAmount = 0;
+  if (state.appliedOrderCoupon) {
+    if (state.appliedOrderCoupon.discountType === 'percent') {
+      discountAmount = Math.round(subtotal * (state.appliedOrderCoupon.percent / 100));
+    } else {
+      discountAmount = Math.min(state.appliedOrderCoupon.discountAmount, subtotal);
+    }
+
+    if (discountRow) {
+      discountRow.style.display = 'flex';
+      discountLabel.innerText = `Ưu đãi (${state.appliedOrderCoupon.code}):`;
+      discountAmountText.innerText = `-${formatVND(discountAmount)}`;
+    }
+  } else {
+    if (discountRow) discountRow.style.display = 'none';
+  }
+
+  const finalAmount = Math.max(0, subtotal - discountAmount);
+  if (finalAmountEl) finalAmountEl.innerText = formatVND(finalAmount);
+}
+
+async function applyOrderCoupon() {
+  const input = document.getElementById('orderCouponInput');
+  const code = (input ? input.value : '').trim().toUpperCase();
+  const feedback = document.getElementById('orderCouponFeedback');
+  const btn = document.getElementById('btnApplyOrderCoupon');
+  const subtotal = state.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+  if (!code) {
+    state.appliedOrderCoupon = null;
+    if (feedback) {
+      feedback.style.display = 'none';
+      feedback.innerText = '';
+    }
+    updateOrderPriceBreakdown();
+    return;
+  }
+
+  try {
+    if (btn) btn.disabled = true;
+    const res = await fetch('/api/coupons/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code,
+        orderAmount: subtotal,
+        phone: state.currentMember ? state.currentMember.phone : ''
+      })
+    });
+    const json = await res.json();
+
+    if (json.success) {
+      state.appliedOrderCoupon = json;
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.style.color = '#15803d';
+        feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${json.message}`;
+      }
+      showToast('Áp dụng mã giảm giá đơn hàng thành công!', 'success');
+    } else {
+      state.appliedOrderCoupon = null;
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.style.color = '#b91c1c';
+        feedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${json.message || 'Mã giảm giá không hợp lệ'}`;
+      }
+      showToast(json.message || 'Mã không hợp lệ', 'error');
+    }
+  } catch (err) {
+    showToast('Lỗi khi kiểm tra mã giảm giá', 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+    updateOrderPriceBreakdown();
+  }
+}
+
+async function openOrderModal() {
   if (!state.cart.length) {
     showToast('Giỏ hàng trống! Vui lòng chọn sản phẩm trước.', 'info');
     return;
@@ -1048,11 +1241,16 @@ function openOrderModal() {
 
   closeCartDrawer();
 
-  const totalItems = state.cart.reduce((sum, i) => sum + i.qty, 0);
-  const totalAmount = state.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  state.appliedOrderCoupon = null;
+  const couponInput = document.getElementById('orderCouponInput');
+  if (couponInput) couponInput.value = '';
+  const feedback = document.getElementById('orderCouponFeedback');
+  if (feedback) {
+    feedback.style.display = 'none';
+    feedback.innerText = '';
+  }
 
-  document.getElementById('orderItemCount').innerText = `${totalItems} sản phẩm`;
-  document.getElementById('orderFinalAmount').innerText = formatVND(totalAmount);
+  updateOrderPriceBreakdown();
 
   // Điền trước thông tin nếu đã đăng nhập thành viên
   const nameInput = document.getElementById('orderCustomerName');
@@ -1061,6 +1259,7 @@ function openOrderModal() {
   if (phoneInput) phoneInput.value = state.currentMember.phone || '';
 
   document.getElementById('orderModal')?.classList.add('active');
+  updateOrderCouponBadge();
 }
 
 function closeOrderModal() {
@@ -1085,7 +1284,20 @@ async function handleOrderSubmit(e) {
   const customerPhone = document.getElementById('orderCustomerPhone').value.trim();
   const customerAddress = document.getElementById('orderCustomerAddress').value.trim();
   const note = document.getElementById('orderNote').value.trim();
-  const totalAmount = state.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  const subtotal = state.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+  let discountCode = null;
+  let discountAmount = 0;
+  if (state.appliedOrderCoupon) {
+    discountCode = state.appliedOrderCoupon.code;
+    if (state.appliedOrderCoupon.discountType === 'percent') {
+      discountAmount = Math.round(subtotal * (state.appliedOrderCoupon.percent / 100));
+    } else {
+      discountAmount = Math.min(state.appliedOrderCoupon.discountAmount, subtotal);
+    }
+  }
+
+  const finalAmount = Math.max(0, subtotal - discountAmount);
 
   try {
     const res = await fetch('/api/orders', {
@@ -1097,18 +1309,25 @@ async function handleOrderSubmit(e) {
         customerAddress,
         note,
         items: state.cart,
-        totalAmount
+        totalAmount: finalAmount,
+        originalAmount: subtotal,
+        discountCode,
+        discountAmount
       })
     });
     const json = await res.json();
 
     if (json.success) {
       state.cart = [];
+      state.appliedOrderCoupon = null;
+      if (state.currentMember) {
+        fetchMemberCoupons(state.currentMember.phone);
+      }
       saveCart();
       updateCartUI();
       closeOrderModal();
       showToast(`🎉 ${json.message}`, 'success');
-      alert(`✅ ĐẶT HÀNG THÀNH CÔNG!\n\nMã đơn: ${json.data.orderCode}\nTổng tiền: ${formatVND(totalAmount)}\nĐịa chỉ giao: ${customerAddress}\n\nChuyên viên Shinzxe sẽ gọi xác nhận và đóng gói gửi tới quý khách trong thời gian sớm nhất.`);
+      alert(`✅ ĐẶT HÀNG THÀNH CÔNG!\n\nMã đơn: ${json.data.orderCode}\nTổng tiền: ${formatVND(finalAmount)}${discountAmount > 0 ? ` (Đã giảm: -${formatVND(discountAmount)} qua mã ${discountCode})` : ''}\nĐịa chỉ giao: ${customerAddress}\n\nChuyên viên Shinzxe sẽ gọi xác nhận và đóng gói gửi tới quý khách trong thời gian sớm nhất.`);
     } else {
       showToast(json.message || 'Lỗi khi tạo đơn hàng', 'error');
     }
@@ -1176,23 +1395,30 @@ function renderMemberModal(view = 'card') {
           </div>
         </div>
 
-        <div style="background: #fdfbf7; border: 1px dashed var(--accent); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div style="font-weight: 700; color: var(--primary); font-size: 0.92rem;"><i class="fa-solid fa-ticket" style="color: var(--accent);"></i> Mã giảm 10% độc quyền:</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted);">Áp dụng cho mọi lần đặt lịch trực tuyến</div>
+        <div style="background: #fdfbf7; border: 1px dashed var(--accent); padding: 14px 16px; border-radius: var(--radius-md); margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="font-weight: 700; color: var(--primary); font-size: 0.92rem;">
+              <i class="fa-solid fa-gift" style="color: var(--accent);"></i> Ưu Đãi Độc Quyền (Mỗi mã dùng 1 lần):
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Tài khoản: ${m.phone}</span>
           </div>
-          <code style="background: var(--bg-alt); padding: 6px 12px; border-radius: 6px; font-weight: 700; color: var(--accent-hover); font-size: 0.95rem;">SHINZXEVIP10</code>
+          <div id="memberVouchersList" style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 10px;">
+              <i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách ưu đãi...
+            </div>
+          </div>
         </div>
 
         <div style="display: flex; gap: 10px;">
           <button class="btn btn-outline" style="flex: 1;" onclick="handleMemberLogout()">
             <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
           </button>
-          <button class="btn btn-primary" style="flex: 2;" onclick="closeMemberModal(); openBookingModal(null, 'SHINZXEVIP10');">
-            <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Ưu Đãi VIP
+          <button class="btn btn-primary" style="flex: 2;" onclick="closeMemberModal(); openBookingModal();">
+            <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Hẹn Ngay
           </button>
         </div>
       `;
+      fetchAndRenderMemberCoupons(m.phone);
       return;
     } else if (view === 'bookings') {
       body.innerHTML = navTabs + `
@@ -1346,7 +1572,7 @@ async function fetchAndRenderMemberOrders(phone) {
             <div style="font-size: 0.88rem; color: var(--text-main); line-height: 1.6;">
               <div><strong>Sản phẩm:</strong> ${itemsText || 'Sản phẩm boutique'}</div>
               <div><strong>Địa chỉ:</strong> ${o.customerAddress || 'Giao tại chỗ'}</div>
-              <div><strong>Tổng tiền:</strong> <span style="color: var(--accent-hover); font-weight: 700;">${formatVND(o.totalAmount)}</span></div>
+              <div><strong>Tổng tiền:</strong> <span style="color: var(--accent-hover); font-weight: 700;">${formatVND(o.totalAmount)}</span> ${o.discountAmount > 0 ? `<span style="font-size: 0.78rem; color: var(--success); font-weight: 600;">(Đã giảm -${formatVND(o.discountAmount)} qua mã ${o.discountCode || ''})</span>` : ''}</div>
             </div>
           </div>
         `;
@@ -1361,6 +1587,44 @@ async function fetchAndRenderMemberOrders(phone) {
     }
   } catch (err) {
     container.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 20px;">Lỗi khi tải dữ liệu đơn hàng.</div>`;
+  }
+}
+
+async function fetchAndRenderMemberCoupons(phone) {
+  const container = document.getElementById('memberVouchersList');
+  if (!container) return;
+
+  try {
+    const couponsData = await fetchMemberCoupons(phone);
+    if (!couponsData || !couponsData.allCoupons) {
+      container.innerHTML = `<div style="font-size: 0.85rem; color: var(--text-muted);">Không thể tải danh sách ưu đãi.</div>`;
+      return;
+    }
+
+    container.innerHTML = couponsData.allCoupons.map(c => `
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 4px;">
+        <div>
+          <div style="font-weight: 700; font-size: 0.88rem; color: var(--primary);">
+            <code style="background: #faf8f5; padding: 2px 6px; border-radius: 4px; color: var(--accent-hover); font-size: 0.88rem;">${c.code}</code>
+            <span style="font-size: 0.84rem; color: var(--text-main); font-weight: 600; margin-left: 6px;">${c.name}</span>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">${c.description}</div>
+        </div>
+        <div>
+          ${c.isUsed ? `
+            <span style="background: #f1f5f9; color: #64748b; font-size: 0.78rem; font-weight: 600; padding: 5px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px;">
+              <i class="fa-solid fa-lock"></i> Đã dùng
+            </span>
+          ` : `
+            <button class="btn btn-primary" style="padding: 5px 14px; font-size: 0.78rem; font-weight: 700; border-radius: 6px;" onclick="closeMemberModal(); openBookingModal(null, '${c.code}')">
+              Dùng ngay
+            </button>
+          `}
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    container.innerHTML = `<div style="font-size: 0.85rem; color: var(--danger);">Lỗi khi tải mã ưu đãi.</div>`;
   }
 }
 

@@ -126,14 +126,24 @@ app.get('/api/slots', (req, res) => {
   res.json({ success: true, data: slots });
 });
 
-// 4.1 Kiểm tra và áp dụng mã giảm giá
+// 4.1 Kiểm tra và áp dụng mã giảm giá (Mỗi tài khoản chỉ được dùng 1 lần)
 app.post('/api/coupons/validate', (req, res) => {
-  const { code, serviceId } = req.body;
-  const result = store.validateCoupon(code, serviceId);
+  const { code, serviceId, phone, orderAmount } = req.body;
+  const result = store.validateCoupon(code, serviceId, phone, orderAmount);
   if (!result.success) {
     return res.status(400).json(result);
   }
   res.json(result);
+});
+
+// 4.2 Lấy danh sách trạng thái mã giảm giá cho thành viên
+app.get('/api/member/coupons', (req, res) => {
+  const { phone } = req.query;
+  if (!phone) {
+    return res.status(400).json({ success: false, message: 'Thiếu số điện thoại của thành viên!' });
+  }
+  const statusData = store.getMemberCouponsStatus(phone);
+  res.json({ success: true, data: statusData });
 });
 
 // 5. Đặt lịch mới (Tự động sinh mã QR Base64 trực tiếp)
@@ -158,6 +168,13 @@ app.post('/api/bookings', async (req, res) => {
         success: false, 
         message: 'Vui lòng điền đầy đủ họ tên, số điện thoại, ngày và giờ hẹn!' 
       });
+    }
+
+    if (discountCode) {
+      const couponCheck = store.validateCoupon(discountCode, serviceId, customerPhone);
+      if (!couponCheck.success) {
+        return res.status(400).json({ success: false, message: couponCheck.message });
+      }
     }
 
     const booking = store.createBooking({
@@ -308,12 +325,34 @@ app.get('/api/products/:id', (req, res) => {
 
 // 13. Đặt mua và Quản lý Đơn hàng sản phẩm Boutique
 app.post('/api/orders', (req, res) => {
-  const { customerName, customerPhone, customerAddress, items, totalAmount, note } = req.body;
+  const { customerName, customerPhone, customerAddress, items, totalAmount, note, discountCode, discountAmount, originalAmount } = req.body;
   if (!customerName || !customerPhone || !customerAddress || !items || !items.length) {
     return res.status(400).json({ success: false, message: 'Vui lòng điền đầy đủ tên, số điện thoại, địa chỉ và chọn sản phẩm!' });
   }
-  const order = store.createOrder({ customerName, customerPhone, customerAddress, items, totalAmount, note });
-  res.json({ success: true, data: order, message: `Đặt hàng thành công! Mã đơn: ${order.orderCode}. Nhân viên Shinzxe sẽ liên hệ giao hàng sớm nhất!` });
+
+  if (discountCode) {
+    const couponCheck = store.validateCoupon(discountCode, null, customerPhone, originalAmount || totalAmount);
+    if (!couponCheck.success) {
+      return res.status(400).json({ success: false, message: couponCheck.message });
+    }
+  }
+
+  try {
+    const order = store.createOrder({ 
+      customerName, 
+      customerPhone, 
+      customerAddress, 
+      items, 
+      totalAmount, 
+      note,
+      discountCode,
+      discountAmount,
+      originalAmount
+    });
+    res.json({ success: true, data: order, message: `Đặt hàng thành công! Mã đơn: ${order.orderCode}. Nhân viên Shinzxe sẽ liên hệ giao hàng sớm nhất!` });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
 });
 
 // Admin: Lấy danh sách tất cả đơn hàng

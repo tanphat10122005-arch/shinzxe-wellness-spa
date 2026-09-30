@@ -521,15 +521,40 @@
       </div>
       <div class="modal-body">
         <form id="orderForm" onsubmit="handleOrderSubmit(event)">
-          <div style="background: var(--bg-alt); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 18px; font-size: 0.9rem;">
+          <div style="background: var(--bg-alt); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 16px; font-size: 0.9rem;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
               <span style="color: var(--text-muted);">Số lượng sản phẩm:</span>
               <strong id="orderItemCount">0 món</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; font-size: 1.05rem; font-weight: 700; color: var(--primary);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span style="color: var(--text-muted);">Tạm tính:</span>
+              <span id="orderSubtotalAmount" style="font-weight: 600;">0 đ</span>
+            </div>
+            <div id="orderDiscountRow" style="display: none; justify-content: space-between; margin-bottom: 6px; color: var(--success); font-weight: 600;">
+              <span id="orderDiscountLabel">Ưu đãi giảm giá:</span>
+              <span id="orderDiscountAmountText">-0 đ</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 1.05rem; font-weight: 700; color: var(--primary); border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px;">
               <span>Tổng tiền cần thanh toán:</span>
               <span id="orderFinalAmount" style="color: var(--accent-hover);">0 đ</span>
             </div>
+          </div>
+
+          <!-- Ô nhập mã giảm giá sản phẩm -->
+          <div class="booking-coupon-box" style="background: #faf8f5; border: 1px dashed var(--accent); padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="form-label" style="margin-bottom: 0; font-size: 0.86rem; font-weight: 600;">
+                <i class="fa-solid fa-ticket" style="color: var(--accent);"></i> Mã Ưu Đãi (Dùng 1 lần/tài khoản):
+              </label>
+              <span id="orderCouponHintBadge" style="font-size: 0.72rem; color: var(--accent); background: rgba(197,160,89,0.12); padding: 2px 8px; border-radius: 999px;">Gợi ý: SHINZXEVIP10</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="orderCouponInput" class="form-control" placeholder="Nhập mã (VD: SHINZXEVIP10)" style="text-transform: uppercase; letter-spacing: 1px; font-weight: 600; font-size: 0.9rem;">
+              <button type="button" class="btn btn-outline" id="btnApplyOrderCoupon" onclick="applyOrderCoupon()" style="white-space: nowrap; padding: 0 16px; font-weight: 600; font-size: 0.88rem;">
+                Áp Dụng
+              </button>
+            </div>
+            <div id="orderCouponFeedback" style="font-size: 0.82rem; margin-top: 6px; display: none;"></div>
           </div>
           <div class="form-group">
             <label class="form-label"><i class="fa-solid fa-user" style="color: var(--accent);"></i> Họ tên người nhận (*):</label>
