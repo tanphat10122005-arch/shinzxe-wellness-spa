@@ -11,7 +11,8 @@ let state = {
   currentProductCategory: 'all',
   selectedServiceId: null,
   selectedSlotTime: null,
-  appliedBookingCoupon: null
+  appliedBookingCoupon: null,
+  pendingAction: null
 };
 
 // Tiện ích format tiền tệ VNĐ
@@ -313,6 +314,13 @@ function populateStaffSelect() {
 
 // ================= MODAL ĐẶT LỊCH ================= //
 function openBookingModal(serviceId = null, couponCode = null) {
+  if (!state.currentMember) {
+    showToast('Vui lòng đăng nhập tài khoản thành viên để đặt lịch hẹn!', 'info');
+    state.pendingAction = { action: 'booking', serviceId, couponCode };
+    openMemberModal('login');
+    return;
+  }
+
   const modal = document.getElementById('bookingModal');
   if (!modal) return;
   modal.classList.add('active');
@@ -324,13 +332,13 @@ function openBookingModal(serviceId = null, couponCode = null) {
     if (select) select.value = serviceId;
   }
 
-  // Tự động điền thông tin nếu thành viên đang đăng nhập
-  if (state.currentMember) {
-    const nameInput = document.getElementById('customerNameInput');
-    const phoneInput = document.getElementById('customerPhoneInput');
-    if (nameInput && !nameInput.value) nameInput.value = state.currentMember.name || '';
-    if (phoneInput && !phoneInput.value) phoneInput.value = state.currentMember.phone || '';
-  }
+  // Tự động điền thông tin thành viên đang đăng nhập
+  const nameInput = document.getElementById('customerNameInput');
+  const phoneInput = document.getElementById('customerPhoneInput');
+  const emailInput = document.getElementById('customerEmailInput');
+  if (nameInput) nameInput.value = state.currentMember.name || '';
+  if (phoneInput) phoneInput.value = state.currentMember.phone || '';
+  if (emailInput && state.currentMember.email) emailInput.value = state.currentMember.email;
 
   // Tự động điền mã giảm giá nếu có hoặc nếu là thành viên VIP
   const couponInput = document.getElementById('bookingCouponInput');
@@ -512,6 +520,14 @@ function selectTimeSlot(time, element) {
 // Gửi form đặt lịch lên server
 async function handleBookingSubmit(event) {
   event.preventDefault();
+
+  if (!state.currentMember) {
+    showToast('Vui lòng đăng nhập tài khoản thành viên để hoàn tất đặt lịch!', 'error');
+    state.pendingAction = { action: 'booking' };
+    closeBookingModal();
+    openMemberModal('login');
+    return;
+  }
 
   const serviceId = document.getElementById('modalServiceSelect').value;
   const staffId = document.getElementById('modalStaffSelect').value;
@@ -1021,6 +1037,15 @@ function openOrderModal() {
     showToast('Giỏ hàng trống! Vui lòng chọn sản phẩm trước.', 'info');
     return;
   }
+
+  if (!state.currentMember) {
+    showToast('Vui lòng đăng nhập tài khoản thành viên để đặt mua sản phẩm!', 'info');
+    state.pendingAction = { action: 'order' };
+    closeCartDrawer();
+    openMemberModal('login');
+    return;
+  }
+
   closeCartDrawer();
 
   const totalItems = state.cart.reduce((sum, i) => sum + i.qty, 0);
@@ -1030,12 +1055,10 @@ function openOrderModal() {
   document.getElementById('orderFinalAmount').innerText = formatVND(totalAmount);
 
   // Điền trước thông tin nếu đã đăng nhập thành viên
-  if (state.currentMember) {
-    const nameInput = document.getElementById('orderCustomerName');
-    const phoneInput = document.getElementById('orderCustomerPhone');
-    if (nameInput && !nameInput.value) nameInput.value = state.currentMember.name;
-    if (phoneInput && !phoneInput.value) phoneInput.value = state.currentMember.phone;
-  }
+  const nameInput = document.getElementById('orderCustomerName');
+  const phoneInput = document.getElementById('orderCustomerPhone');
+  if (nameInput) nameInput.value = state.currentMember.name || '';
+  if (phoneInput) phoneInput.value = state.currentMember.phone || '';
 
   document.getElementById('orderModal')?.classList.add('active');
 }
@@ -1046,6 +1069,14 @@ function closeOrderModal() {
 
 async function handleOrderSubmit(e) {
   e.preventDefault();
+
+  if (!state.currentMember) {
+    showToast('Vui lòng đăng nhập tài khoản thành viên để hoàn tất mua hàng!', 'error');
+    closeOrderModal();
+    openMemberModal('login');
+    return;
+  }
+
   const btn = document.getElementById('btnSubmitOrder');
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi đơn...';
@@ -1099,53 +1130,109 @@ function closeMemberModal() {
   document.getElementById('memberModal')?.classList.remove('active');
 }
 
-function renderMemberModal(view = 'login') {
+function renderMemberModal(view = 'card') {
   const body = document.getElementById('memberModalBody');
   if (!body) return;
 
   if (state.currentMember) {
     const m = state.currentMember;
-    body.innerHTML = `
-      <div class="vip-card-preview">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-          <div>
-            <div style="font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; color: #f7d283;">SHINZXE PRIVILEGE CLUB</div>
-            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; margin-top: 2px;">${m.name}</h3>
-          </div>
-          <span style="background: rgba(197,160,89,0.3); border: 1px solid rgba(197,160,89,0.6); padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; color: #f7d283;">
-            <i class="fa-solid fa-gem"></i> ${m.tier}
-          </span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-          <div>
-            <div style="font-size: 0.78rem; color: #cbd5e1;">Số điện thoại</div>
-            <div style="font-weight: 600; font-size: 0.95rem;">${m.phone}</div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 0.78rem; color: #cbd5e1;">Điểm thưởng tích lũy</div>
-            <div style="font-size: 1.3rem; font-weight: 700; color: #f7d283;">${m.points || 100} <span style="font-size: 0.8rem;">pts</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div style="background: #fdfbf7; border: 1px dashed var(--accent); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <div style="font-weight: 700; color: var(--primary); font-size: 0.92rem;"><i class="fa-solid fa-ticket" style="color: var(--accent);"></i> Mã giảm 10% độc quyền:</div>
-          <div style="font-size: 0.82rem; color: var(--text-muted);">Áp dụng cho mọi lần đặt lịch trực tuyến</div>
-        </div>
-        <code style="background: var(--bg-alt); padding: 6px 12px; border-radius: 6px; font-weight: 700; color: var(--accent-hover); font-size: 0.95rem;">SHINZXEVIP10</code>
-      </div>
-
-      <div style="display: flex; gap: 10px;">
-        <button class="btn btn-outline" style="flex: 1;" onclick="handleMemberLogout()">
-          <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
+    
+    // Header Navigation Tabs cho thành viên đã đăng nhập
+    let navTabs = `
+      <div style="display: flex; gap: 6px; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 10px; overflow-x: auto;">
+        <button onclick="renderMemberModal('card')" class="btn ${view === 'card' ? 'btn-primary' : 'btn-outline'}" style="padding: 7px 14px; font-size: 0.84rem; border-radius: 999px;">
+          <i class="fa-solid fa-crown"></i> Thẻ VIP
         </button>
-        <button class="btn btn-primary" style="flex: 2;" onclick="closeMemberModal(); openBookingModal(null, 'SHINZXEVIP10');">
-          <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Ưu Đãi VIP
+        <button onclick="renderMemberModal('bookings')" class="btn ${view === 'bookings' ? 'btn-primary' : 'btn-outline'}" style="padding: 7px 14px; font-size: 0.84rem; border-radius: 999px;">
+          <i class="fa-solid fa-calendar-check"></i> Lịch Sử Đặt Lịch
+        </button>
+        <button onclick="renderMemberModal('orders')" class="btn ${view === 'orders' ? 'btn-primary' : 'btn-outline'}" style="padding: 7px 14px; font-size: 0.84rem; border-radius: 999px;">
+          <i class="fa-solid fa-bag-shopping"></i> Đơn Mua Hàng
         </button>
       </div>
     `;
-    return;
+
+    if (view === 'card') {
+      body.innerHTML = navTabs + `
+        <div class="vip-card-preview">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+              <div style="font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; color: #f7d283;">SHINZXE PRIVILEGE CLUB</div>
+              <h3 style="font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 700; margin-top: 2px;">${m.name}</h3>
+            </div>
+            <span style="background: rgba(197,160,89,0.3); border: 1px solid rgba(197,160,89,0.6); padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; color: #f7d283;">
+              <i class="fa-solid fa-gem"></i> ${m.tier}
+            </span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <div style="font-size: 0.78rem; color: #cbd5e1;">Số điện thoại</div>
+              <div style="font-weight: 600; font-size: 0.95rem;">${m.phone}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.78rem; color: #cbd5e1;">Điểm thưởng tích lũy</div>
+              <div style="font-size: 1.3rem; font-weight: 700; color: #f7d283;">${m.points || 100} <span style="font-size: 0.8rem;">pts</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #fdfbf7; border: 1px dashed var(--accent); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; color: var(--primary); font-size: 0.92rem;"><i class="fa-solid fa-ticket" style="color: var(--accent);"></i> Mã giảm 10% độc quyền:</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">Áp dụng cho mọi lần đặt lịch trực tuyến</div>
+          </div>
+          <code style="background: var(--bg-alt); padding: 6px 12px; border-radius: 6px; font-weight: 700; color: var(--accent-hover); font-size: 0.95rem;">SHINZXEVIP10</code>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-outline" style="flex: 1;" onclick="handleMemberLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
+          </button>
+          <button class="btn btn-primary" style="flex: 2;" onclick="closeMemberModal(); openBookingModal(null, 'SHINZXEVIP10');">
+            <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Ưu Đãi VIP
+          </button>
+        </div>
+      `;
+      return;
+    } else if (view === 'bookings') {
+      body.innerHTML = navTabs + `
+        <div id="memberBookingsList" style="min-height: 180px; max-height: 52vh; overflow-y: auto;">
+          <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 10px;">Đang tải lịch sử đặt lịch...</p>
+          </div>
+        </div>
+        <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <button class="btn btn-outline" style="font-size: 0.85rem;" onclick="renderMemberModal('card')">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại thẻ
+          </button>
+          <button class="btn btn-primary" style="font-size: 0.85rem;" onclick="closeMemberModal(); openBookingModal();">
+            <i class="fa-solid fa-plus"></i> Đặt Lịch Mới
+          </button>
+        </div>
+      `;
+      fetchAndRenderMemberBookings(m.phone);
+      return;
+    } else if (view === 'orders') {
+      body.innerHTML = navTabs + `
+        <div id="memberOrdersList" style="min-height: 180px; max-height: 52vh; overflow-y: auto;">
+          <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 10px;">Đang tải lịch sử mua hàng...</p>
+          </div>
+        </div>
+        <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <button class="btn btn-outline" style="font-size: 0.85rem;" onclick="renderMemberModal('card')">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại thẻ
+          </button>
+          <button class="btn btn-primary" style="font-size: 0.85rem;" onclick="closeMemberModal(); window.location.hash='#products';">
+            <i class="fa-solid fa-bag-shopping"></i> Mua Thêm Sản Phẩm
+          </button>
+        </div>
+      `;
+      fetchAndRenderMemberOrders(m.phone);
+      return;
+    }
   }
 
   // Nếu chưa đăng nhập: hiển thị Tabs Đăng nhập & Đăng ký
@@ -1199,6 +1286,84 @@ function renderMemberModal(view = 'login') {
   `;
 }
 
+async function fetchAndRenderMemberBookings(phone) {
+  const container = document.getElementById('memberBookingsList');
+  if (!container) return;
+
+  try {
+    const res = await fetch(`/api/member/bookings?phone=${encodeURIComponent(phone)}`);
+    const json = await res.json();
+
+    if (json.success && json.data && json.data.length > 0) {
+      container.innerHTML = json.data.map(b => `
+        <div style="background: #faf8f5; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: var(--primary); font-size: 1.05rem;">${b.bookingCode}</strong>
+            <span style="padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; ${getStatusBadgeStyle(b.status)}">
+              ${getStatusText(b.status)}
+            </span>
+          </div>
+          <div style="font-size: 0.88rem; color: var(--text-main); line-height: 1.6;">
+            <div><strong>Dịch vụ:</strong> ${b.serviceName}</div>
+            <div><strong>Thời gian:</strong> ${b.time} ngày ${b.date}</div>
+            <div><strong>Chuyên viên:</strong> ${b.staffName || 'Ngẫu nhiên'}</div>
+            <div><strong>Thanh toán:</strong> <span style="color: var(--accent-hover); font-weight: 700;">${formatVND(b.price)}</span> ${b.discountAmount > 0 ? `<span style="font-size: 0.78rem; color: var(--success); font-weight: 600;">(Đã giảm -${formatVND(b.discountAmount)})</span>` : ''}</div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 36px 20px; color: var(--text-muted);">
+          <i class="fa-regular fa-calendar-xmark fa-2x" style="color: #cbd5e1; margin-bottom: 10px;"></i>
+          <p>Bạn chưa có lịch hẹn nào tại Shinzxe.</p>
+        </div>
+      `;
+    }
+  } catch (err) {
+    container.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 20px;">Lỗi khi tải dữ liệu lịch hẹn.</div>`;
+  }
+}
+
+async function fetchAndRenderMemberOrders(phone) {
+  const container = document.getElementById('memberOrdersList');
+  if (!container) return;
+
+  try {
+    const res = await fetch(`/api/member/orders?phone=${encodeURIComponent(phone)}`);
+    const json = await res.json();
+
+    if (json.success && json.data && json.data.length > 0) {
+      container.innerHTML = json.data.map(o => {
+        const itemsText = (o.items || []).map(i => `${i.name} (x${i.quantity || 1})`).join(', ');
+        return `
+          <div style="background: #faf8f5; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <strong style="color: var(--primary); font-size: 1.05rem;">${o.orderCode || 'OD-' + o.id}</strong>
+              <span style="padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: #e0f2fe; color: #0369a1;">
+                ${o.status === 'completed' ? 'Đã giao' : (o.status === 'shipping' ? 'Đang giao' : (o.status === 'cancelled' ? 'Đã hủy' : 'Chờ xử lý'))}
+              </span>
+            </div>
+            <div style="font-size: 0.88rem; color: var(--text-main); line-height: 1.6;">
+              <div><strong>Sản phẩm:</strong> ${itemsText || 'Sản phẩm boutique'}</div>
+              <div><strong>Địa chỉ:</strong> ${o.customerAddress || 'Giao tại chỗ'}</div>
+              <div><strong>Tổng tiền:</strong> <span style="color: var(--accent-hover); font-weight: 700;">${formatVND(o.totalAmount)}</span></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 36px 20px; color: var(--text-muted);">
+          <i class="fa-solid fa-box-open fa-2x" style="color: #cbd5e1; margin-bottom: 10px;"></i>
+          <p>Bạn chưa có đơn mua sản phẩm nào.</p>
+        </div>
+      `;
+    }
+  } catch (err) {
+    container.innerHTML = `<div style="text-align: center; color: var(--danger); padding: 20px;">Lỗi khi tải dữ liệu đơn hàng.</div>`;
+  }
+}
+
 function switchMemberTab(tab) {
   renderMemberModal(tab);
 }
@@ -1221,8 +1386,21 @@ async function handleMemberLogin(e) {
       state.currentMember = json.member;
       localStorage.setItem('shinzxeMember', JSON.stringify(json.member));
       updateMemberNavUI();
-      renderMemberModal();
       showToast(json.message, 'success');
+
+      if (state.pendingAction) {
+        const pending = state.pendingAction;
+        state.pendingAction = null;
+        closeMemberModal();
+        if (pending.action === 'booking') {
+          setTimeout(() => openBookingModal(pending.serviceId, pending.couponCode), 250);
+        } else if (pending.action === 'order') {
+          setTimeout(() => openOrderModal(), 250);
+        }
+        return;
+      }
+
+      renderMemberModal('card');
     } else {
       showToast(json.message || 'Sai thông tin đăng nhập', 'error');
     }
@@ -1259,8 +1437,21 @@ async function handleMemberRegister(e) {
       state.currentMember = json.member;
       localStorage.setItem('shinzxeMember', JSON.stringify(json.member));
       updateMemberNavUI();
-      renderMemberModal();
       showToast(json.message, 'success');
+
+      if (state.pendingAction) {
+        const pending = state.pendingAction;
+        state.pendingAction = null;
+        closeMemberModal();
+        if (pending.action === 'booking') {
+          setTimeout(() => openBookingModal(pending.serviceId, pending.couponCode), 250);
+        } else if (pending.action === 'order') {
+          setTimeout(() => openOrderModal(), 250);
+        }
+        return;
+      }
+
+      renderMemberModal('card');
     } else {
       showToast(json.message || 'Đăng ký thất bại', 'error');
     }

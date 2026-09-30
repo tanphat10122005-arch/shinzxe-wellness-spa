@@ -92,6 +92,11 @@
         </a>
       </li>
       <li>
+        <a href="#orders" class="sidebar-link" onclick="switchTab('orders', this)">
+          <i class="fa-solid fa-boxes-packing"></i> Quản Lý Đơn Hàng
+        </a>
+      </li>
+      <li>
         <a href="#services" class="sidebar-link" onclick="switchTab('services', this)">
           <i class="fa-solid fa-spa"></i> Quản Lý Dịch Vụ
         </a>
@@ -270,6 +275,44 @@
           </thead>
           <tbody id="servicesTableBody">
             <!-- Dynamic services injected here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION 4: ORDERS MANAGEMENT TAB -->
+    <div id="tabOrders" class="data-panel" style="display: none;">
+      <div class="panel-header" style="flex-wrap: wrap; gap: 14px;">
+        <h3 class="chart-title"><i class="fa-solid fa-boxes-packing"></i> Quản Lý Đơn Hàng Sản Phẩm Boutique</h3>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <input type="text" id="orderSearchInput" class="admin-input" placeholder="Tìm theo tên khách, SĐT, mã đơn..." oninput="filterOrdersTable()">
+          <select id="orderStatusFilter" class="admin-select" onchange="filterOrdersTable()">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="pending">Chờ xử lý</option>
+            <option value="shipping">Đang giao hàng</option>
+            <option value="completed">Đã hoàn thành</option>
+            <option value="cancelled">Đã hủy</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Mã Đơn</th>
+              <th>Khách Hàng</th>
+              <th>Số Điện Thoại</th>
+              <th>Địa Chỉ Giao</th>
+              <th>Sản Phẩm Đặt Mua</th>
+              <th>Tổng Tiền</th>
+              <th>Ghi Chú</th>
+              <th>Trạng Thái</th>
+              <th>Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <!-- Dynamic order rows injected here -->
           </tbody>
         </table>
       </div>

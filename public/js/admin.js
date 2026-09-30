@@ -1,6 +1,7 @@
 let adminState = {
   stats: null,
   bookings: [],
+  orders: [],
   services: [],
   categoryChart: null,
   trendChart: null,
@@ -146,6 +147,7 @@ async function initAdmin() {
   await Promise.all([
     loadDashboardStats(),
     loadBookingsTable(),
+    loadOrdersTable(),
     loadServicesTable()
   ]);
 }
@@ -157,22 +159,33 @@ function switchTab(tabName, linkElement) {
 
   const tabDashboard = document.getElementById('tabDashboard');
   const tabBookings = document.getElementById('tabBookings');
+  const tabOrders = document.getElementById('tabOrders');
   const tabServices = document.getElementById('tabServices');
   const pageTitle = document.getElementById('pageTitle');
 
   if (tabName === 'dashboard') {
     tabDashboard.style.display = 'block';
     tabBookings.style.display = 'block';
+    if (tabOrders) tabOrders.style.display = 'none';
     tabServices.style.display = 'none';
     pageTitle.innerText = 'Trung Tâm Quản Trị & Thống Kê';
   } else if (tabName === 'bookings') {
     tabDashboard.style.display = 'none';
     tabBookings.style.display = 'block';
+    if (tabOrders) tabOrders.style.display = 'none';
     tabServices.style.display = 'none';
     pageTitle.innerText = 'Quản Lý Danh Sách Cuộc Hẹn';
+  } else if (tabName === 'orders') {
+    tabDashboard.style.display = 'none';
+    tabBookings.style.display = 'none';
+    if (tabOrders) tabOrders.style.display = 'block';
+    tabServices.style.display = 'none';
+    pageTitle.innerText = 'Quản Lý Đơn Hàng Sản Phẩm Boutique';
+    loadOrdersTable();
   } else if (tabName === 'services') {
     tabDashboard.style.display = 'none';
     tabBookings.style.display = 'none';
+    if (tabOrders) tabOrders.style.display = 'none';
     tabServices.style.display = 'block';
     pageTitle.innerText = 'Quản Lý Dịch Vụ Spa';
   }
@@ -494,4 +507,111 @@ async function deleteService(id) {
   } catch (err) {
     alert('Lỗi xóa dịch vụ');
   }
+}
+
+// ================= QUẢN LÝ ĐƠN HÀNG BOUTIQUE ================= //
+async function loadOrdersTable() {
+  try {
+    const json = await adminFetch('/api/orders');
+    if (!json || !json.success) return;
+    adminState.orders = json.data;
+    renderOrdersTable(adminState.orders);
+  } catch (err) {
+    console.error('Error loading orders:', err);
+  }
+}
+
+function renderOrdersTable(orders) {
+  const tbody = document.getElementById('ordersTableBody');
+  if (!tbody) return;
+
+  if (!orders || !orders.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 24px; color: var(--admin-muted);">Chưa có đơn đặt hàng nào trong hệ thống.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = orders.map(o => {
+    const itemsHtml = (o.items || []).map(item => `
+      <div style="font-size: 0.85rem; margin-bottom: 2px;">
+        • <strong>${item.name}</strong> x${item.quantity || 1} (${formatVND(item.price)})
+      </div>
+    `).join('');
+
+    return `
+      <tr>
+        <td><strong style="color: var(--admin-primary);">${o.orderCode || 'OD-' + o.id}</strong></td>
+        <td><strong>${o.customerName}</strong></td>
+        <td><a href="tel:${o.customerPhone}" style="color: var(--admin-primary); font-weight: 600;">${o.customerPhone}</a></td>
+        <td style="max-width: 200px; font-size: 0.85rem; line-height: 1.4;">${o.customerAddress || 'Chưa cung cấp'}</td>
+        <td style="min-width: 180px;">${itemsHtml || 'Sản phẩm lẻ'}</td>
+        <td><strong style="color: #c5a059; font-size: 1rem;">${formatVND(o.totalAmount)}</strong></td>
+        <td style="font-size: 0.82rem; color: var(--admin-muted);">${o.note || 'Không có'}</td>
+        <td>
+          <span class="badge-status badge-${o.status || 'pending'}">
+            ${getOrderStatusText(o.status)}
+          </span>
+        </td>
+        <td>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            ${o.status === 'pending' ? `
+              <button class="btn-action" title="Xác nhận giao hàng" onclick="changeOrderStatus(${o.id}, 'shipping')" style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; font-size: 0.78rem;">
+                <i class="fa-solid fa-truck"></i> Giao
+              </button>
+            ` : ''}
+            ${o.status !== 'completed' ? `
+              <button class="btn-action success" title="Đánh dấu đã hoàn thành" onclick="changeOrderStatus(${o.id}, 'completed')">
+                <i class="fa-solid fa-check"></i>
+              </button>
+            ` : ''}
+            ${o.status !== 'cancelled' ? `
+              <button class="btn-action danger" title="Hủy đơn" onclick="changeOrderStatus(${o.id}, 'cancelled')">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function getOrderStatusText(status) {
+  switch (status) {
+    case 'shipping': return 'Đang giao hàng';
+    case 'completed': return 'Đã giao thành công';
+    case 'cancelled': return 'Đã hủy đơn';
+    default: return 'Chờ xử lý';
+  }
+}
+
+async function changeOrderStatus(id, newStatus) {
+  if (!confirm(`Bạn có chắc muốn chuyển trạng thái đơn hàng sang "${getOrderStatusText(newStatus)}"?`)) return;
+
+  try {
+    const json = await adminFetch(`/api/orders/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: newStatus })
+    });
+    if (json && json.success) {
+      loadOrdersTable();
+    }
+  } catch (err) {
+    alert('Lỗi khi cập nhật trạng thái đơn hàng');
+  }
+}
+
+function filterOrdersTable() {
+  const query = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+  const statusFilter = document.getElementById('orderStatusFilter')?.value || 'all';
+
+  const filtered = (adminState.orders || []).filter(o => {
+    const matchesSearch = (o.customerName || '').toLowerCase().includes(query) ||
+                          (o.customerPhone || '').includes(query) ||
+                          (o.orderCode || '').toLowerCase().includes(query) ||
+                          (o.customerAddress || '').toLowerCase().includes(query);
+    const matchesStatus = statusFilter === 'all' || o.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  renderOrdersTable(filtered);
 }

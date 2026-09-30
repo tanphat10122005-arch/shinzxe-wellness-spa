@@ -306,6 +306,7 @@ app.get('/api/products/:id', (req, res) => {
   res.json({ success: true, data: product });
 });
 
+// 13. Đặt mua và Quản lý Đơn hàng sản phẩm Boutique
 app.post('/api/orders', (req, res) => {
   const { customerName, customerPhone, customerAddress, items, totalAmount, note } = req.body;
   if (!customerName || !customerPhone || !customerAddress || !items || !items.length) {
@@ -313,6 +314,24 @@ app.post('/api/orders', (req, res) => {
   }
   const order = store.createOrder({ customerName, customerPhone, customerAddress, items, totalAmount, note });
   res.json({ success: true, data: order, message: `Đặt hàng thành công! Mã đơn: ${order.orderCode}. Nhân viên Shinzxe sẽ liên hệ giao hàng sớm nhất!` });
+});
+
+// Admin: Lấy danh sách tất cả đơn hàng
+app.get('/api/orders', requireAdmin, (req, res) => {
+  res.json({ success: true, data: store.getOrders() });
+});
+
+// Admin: Cập nhật trạng thái đơn hàng (pending -> shipping -> completed / cancelled)
+app.patch('/api/orders/:id/status', requireAdmin, (req, res) => {
+  const { status } = req.body;
+  if (!status) {
+    return res.status(400).json({ success: false, message: 'Thiếu trạng thái đơn hàng!' });
+  }
+  const updated = store.updateOrderStatus(req.params.id, status);
+  if (!updated) {
+    return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng!' });
+  }
+  res.json({ success: true, data: updated, message: 'Cập nhật trạng thái đơn hàng thành công!' });
 });
 
 // 14. Hệ thống Thành viên VIP (Member Privilege Club)
@@ -338,6 +357,13 @@ app.get('/api/member/bookings', (req, res) => {
   const { phone } = req.query;
   if (!phone) return res.json({ success: true, data: [] });
   const list = store.getMemberBookings(phone);
+  res.json({ success: true, data: list });
+});
+
+app.get('/api/member/orders', (req, res) => {
+  const { phone } = req.query;
+  if (!phone) return res.json({ success: true, data: [] });
+  const list = store.getMemberOrders(phone);
   res.json({ success: true, data: list });
 });
 

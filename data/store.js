@@ -726,6 +726,27 @@ const store = {
     return { success: true, member: safeData, message: "Chúc mừng bạn đã trở thành thành viên Shinzxe Privilege Club! Bạn được tặng 100 điểm thưởng." };
   },
 
+  getOrders: () => {
+    const data = readData();
+    return data.orders || [];
+  },
+
+  updateOrderStatus: (id, status) => {
+    const data = readData();
+    const order = (data.orders || []).find(o => o.id === parseInt(id));
+    if (order) {
+      order.status = status;
+      writeData(data);
+    }
+    return order;
+  },
+
+  getMemberOrders: (phone) => {
+    const data = readData();
+    const cleanPhone = String(phone).trim();
+    return (data.orders || []).filter(o => o.customerPhone === cleanPhone);
+  },
+
   getMemberBookings: (phone) => {
     const data = readData();
     const cleanPhone = String(phone).trim();
