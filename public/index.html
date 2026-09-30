@@ -13,6 +13,16 @@
   <!-- TOAST NOTIFICATIONS -->
   <div id="toastContainer" class="toast-container"></div>
 
+  <!-- 3D PARALLAX BACKGROUND STAGE (OPTION B) -->
+  <div class="parallax-stage" id="parallaxStage" aria-hidden="true">
+    <div class="parallax-floater zen-orb zen-orb-gold" data-depth="0.25" style="top: 12%; left: 5%;"></div>
+    <div class="parallax-floater zen-orb zen-orb-emerald" data-depth="0.45" style="top: 40%; right: -5%;"></div>
+    <div class="parallax-floater zen-orb zen-orb-gold" data-depth="0.3" style="top: 70%; left: 8%;"></div>
+    <div class="parallax-floater zen-petal" data-depth="-0.35" style="top: 22%; right: 12%;"></div>
+    <div class="parallax-floater zen-petal" data-depth="-0.5" style="top: 50%; left: 10%; animation-delay: -3s;"></div>
+    <div class="parallax-floater zen-petal" data-depth="-0.25" style="top: 78%; right: 16%; animation-delay: -5s;"></div>
+  </div>
+
   <!-- MOBILE NAVIGATION DRAWER & BACKDROP -->
   <div id="mobileBackdrop" class="mobile-nav-backdrop" onclick="toggleMobileMenu()"></div>
   <div id="mobileDrawer" class="mobile-nav-drawer">
@@ -42,10 +52,13 @@
   <!-- HEADER & NAVIGATION (STICKY) -->
   <header class="site-header" id="siteHeader">
     <div class="nav-container">
-      <a href="index.html" class="logo">
-        <div class="logo-badge">✦</div>
-        <span>Shinzxe <strong style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-hover);">Spa</strong></span>
-      </a>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <a href="index.html" class="logo">
+          <div class="logo-badge">✦</div>
+          <span>Shinzxe <strong style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-hover);">Spa</strong></span>
+        </a>
+        <span class="mode-3d-badge" title="Không gian 3D Parallax & Chiều Sâu Đang Kích Hoạt"><i class="fa-solid fa-cube"></i> 3D Zen Space</span>
+      </div>
 
       <ul class="nav-links">
         <li><a href="#services">Liệu Trình & Dịch Vụ</a></li>
@@ -73,9 +86,17 @@
     </div>
   </header>
 
-  <!-- HERO PANORAMIC TRANQUIL BANNER -->
+  <!-- HERO PANORAMIC TRANQUIL BANNER (3D SPATIAL TILT) -->
   <section class="hero-panoramic-banner">
     <div class="hero-banner-inner reveal">
+      <!-- 3D Floating Badges (Option B) -->
+      <div class="hero-3d-floating-chip hero-3d-chip-top">
+        <i class="fa-solid fa-cube" style="color: #f7d283;"></i> <span>3D Zen Spatial Experience</span>
+      </div>
+      <div class="hero-3d-floating-chip hero-3d-chip-bottom">
+        <i class="fa-solid fa-spa" style="color: #f7d283;"></i> <span>Trị Liệu Dưỡng Sinh 5 Sao</span>
+      </div>
+
       <div class="badge-tag">
         <i class="fa-solid fa-spa"></i> Không Gian Trị Liệu & Dưỡng Sinh Chuẩn 5 Sao Quốc Tế
       </div>

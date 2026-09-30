@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initApp();
   setupDateConstraints();
   setupScrollEffects();
+  init3DParallaxSystem();
 });
 
 // Thiết lập hiệu ứng cuộn trang & Sticky Header
@@ -204,6 +205,7 @@ function renderServices(services) {
       </div>
     </div>
   `).join('');
+  setTimeout(init3DCardTilt, 50);
 }
 
 // ================= GIAN HÀNG SẢN PHẨM BOUTIQUE ================= //
@@ -260,6 +262,7 @@ function renderProducts(products) {
       </div>
     </div>
   `).join('');
+  setTimeout(init3DCardTilt, 50);
 }
 
 function renderStaff(staffList) {
@@ -277,6 +280,7 @@ function renderStaff(staffList) {
       <div class="staff-rating"><i class="fa-solid fa-star"></i> ${st.rating} / 5.0</div>
     </div>
   `).join('');
+  setTimeout(init3DCardTilt, 50);
 }
 
 function renderReviews(reviews) {
@@ -294,6 +298,7 @@ function renderReviews(reviews) {
       <div style="font-size: 0.76rem; color: var(--text-light); margin-top: 14px;">${r.date || 'Gần đây'}</div>
     </div>
   `).join('');
+  setTimeout(init3DCardTilt, 50);
 }
 
 function populateServiceSelects() {
@@ -1419,6 +1424,7 @@ function renderMemberModal(view = 'card') {
         </div>
       `;
       fetchAndRenderMemberCoupons(m.phone);
+      setTimeout(initVIPCard3D, 60);
       return;
     } else if (view === 'bookings') {
       body.innerHTML = navTabs + `
@@ -1743,4 +1749,132 @@ function updateMemberNavUI() {
       btnText.innerText = 'Thành Viên';
     }
   }
+}
+
+// ================= PHƯƠNG ÁN B: HỆ THỐNG 3D PARALLAX & 3D TILT CARDS ================= //
+
+function init3DParallaxSystem() {
+  // 1. Cuộn trang 3D Parallax cho các hạt Zen & tinh vân lơ lửng
+  const floaters = document.querySelectorAll('.parallax-floater');
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        floaters.forEach(el => {
+          const depth = parseFloat(el.getAttribute('data-depth') || '0.2');
+          const moveY = scrollY * depth;
+          el.style.transform = `translate3d(0, ${moveY.toFixed(1)}px, 0)`;
+        });
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // 2. Tương tác 3D Parallax cho Hero Panoramic Banner
+  const heroBanner = document.querySelector('.hero-panoramic-banner');
+  const heroInner = document.querySelector('.hero-banner-inner');
+  if (heroBanner && heroInner) {
+    heroBanner.addEventListener('mousemove', (e) => {
+      const rect = heroBanner.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+      heroInner.style.transform = `perspective(1200px) rotateX(${-y * 9}deg) rotateY(${x * 11}deg) translateZ(12px)`;
+      heroInner.style.boxShadow = `${-x * 35}px ${-y * 35 + 28}px 65px rgba(10, 37, 30, 0.32), 0 0 0 1px rgba(197, 160, 89, 0.35)`;
+    });
+
+    heroBanner.addEventListener('mouseleave', () => {
+      heroInner.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+      heroInner.style.boxShadow = '';
+    });
+  }
+
+  // 3. Khởi tạo 3D tilt cho toàn bộ thẻ
+  init3DCardTilt();
+}
+
+// Hàm khởi tạo hiệu ứng 3D Tilt & Ánh sáng động cho tất cả thẻ trên trang
+function init3DCardTilt() {
+  const cards = document.querySelectorAll('.service-card, .product-card, .staff-card, .review-card');
+
+  cards.forEach(card => {
+    if (card.dataset.tilt3dReady) return;
+    card.dataset.tilt3dReady = 'true';
+
+    // Tạo lớp phủ ánh sáng phản chiếu (glare) nếu chưa có
+    let glare = card.querySelector('.card-3d-glare');
+    if (!glare) {
+      glare = document.createElement('div');
+      glare.className = 'card-3d-glare';
+      card.appendChild(glare);
+    }
+
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const pctX = (mouseX / rect.width) - 0.5;
+      const pctY = (mouseY / rect.height) - 0.5;
+
+      // Góc nghiêng 3D
+      const rotateX = -pctY * 16;
+      const rotateY = pctX * 16;
+
+      // Tọa độ vệt sáng (glare)
+      const glareX = (mouseX / rect.width) * 100;
+      const glareY = (mouseY / rect.height) * 100;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.025, 1.025, 1.025) translateZ(10px)`;
+      card.style.boxShadow = `${(-rotateY * 1.5).toFixed(1)}px ${(rotateX * 1.5 + 20).toFixed(1)}px 36px rgba(10, 37, 30, 0.22)`;
+      card.style.borderColor = 'rgba(197, 160, 89, 0.45)';
+
+      glare.style.opacity = '0.7';
+      glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255, 255, 255, 0.45) 0%, rgba(247, 210, 131, 0.18) 38%, transparent 70%)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateZ(0px)';
+      card.style.boxShadow = '';
+      card.style.borderColor = '';
+      glare.style.opacity = '0';
+    });
+  });
+}
+
+// Hiệu ứng 3D Holographic Tilt cho Thẻ VIP Shinzxe Club
+function initVIPCard3D() {
+  const vipCard = document.querySelector('.vip-card-preview');
+  if (!vipCard) return;
+
+  let holo = vipCard.querySelector('.vip-card-hologram');
+  if (!holo) {
+    holo = document.createElement('div');
+    holo.className = 'vip-card-hologram';
+    vipCard.appendChild(holo);
+  }
+
+  vipCard.addEventListener('mousemove', (e) => {
+    const rect = vipCard.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+    const rotX = -y * 18;
+    const rotY = x * 22;
+
+    vipCard.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.04, 1.04, 1.04) translateZ(20px)`;
+    vipCard.style.boxShadow = `${(-rotY * 1.8).toFixed(1)}px ${(rotX * 1.8 + 25).toFixed(1)}px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(247, 210, 131, 0.3)`;
+
+    holo.style.opacity = '0.85';
+    holo.style.transform = `translate(${x * 60}%, ${y * 60}%)`;
+  });
+
+  vipCard.addEventListener('mouseleave', () => {
+    vipCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateZ(0px)';
+    vipCard.style.boxShadow = '';
+    holo.style.opacity = '0';
+  });
 }

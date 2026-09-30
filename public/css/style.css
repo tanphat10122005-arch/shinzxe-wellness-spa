@@ -2186,3 +2186,249 @@ img {
   }
 }
 
+/* ================= PHƯƠNG ÁN B: 3D PARALLAX DEPTH & INTERACTIVE 3D CARDS ================= */
+
+/* 1. Global 3D Perspective & Floating Stage */
+.parallax-stage {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.parallax-floater {
+  position: absolute;
+  pointer-events: none;
+  transition: transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1);
+  will-change: transform;
+}
+
+.zen-orb {
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.4;
+  mix-blend-mode: screen;
+}
+
+.zen-orb-gold {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(197, 160, 89, 0.4) 0%, rgba(197, 160, 89, 0) 70%);
+}
+
+.zen-orb-emerald {
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, rgba(26, 77, 62, 0.35) 0%, rgba(26, 77, 62, 0) 70%);
+}
+
+.zen-petal {
+  width: 32px;
+  height: 32px;
+  background: radial-gradient(circle at 30% 30%, rgba(247, 210, 131, 0.85), rgba(197, 160, 89, 0.3));
+  border-radius: 50% 0 50% 50%;
+  filter: drop-shadow(0 6px 14px rgba(10, 37, 30, 0.2));
+  opacity: 0.65;
+  animation: floatLeaf 8s ease-in-out infinite alternate;
+}
+
+@keyframes floatLeaf {
+  0% { transform: translateY(0px) rotate(0deg) scale(1); }
+  50% { transform: translateY(-25px) rotate(15deg) scale(1.05); }
+  100% { transform: translateY(-50px) rotate(-10deg) scale(0.95); }
+}
+
+/* 2. Hero 3D Spatial Container */
+.hero-panoramic-banner {
+  perspective: 1200px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-banner-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  will-change: transform;
+}
+
+.hero-banner-inner .badge-tag {
+  transform: translateZ(35px);
+}
+
+.hero-banner-inner .hero-title {
+  transform: translateZ(45px);
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.hero-banner-inner .hero-desc {
+  transform: translateZ(30px);
+}
+
+.hero-banner-inner .hero-cta {
+  transform: translateZ(55px);
+}
+
+.hero-banner-inner .hero-banner-features {
+  transform: translateZ(40px);
+}
+
+/* 3D Floating Badges on Hero Banner */
+.hero-3d-floating-chip {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25), 0 0 25px rgba(247, 210, 131, 0.25);
+  border-radius: var(--radius-full);
+  padding: 10px 20px;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  transform: translateZ(65px);
+  animation: chipFloat 5s ease-in-out infinite alternate;
+  z-index: 10;
+}
+
+.hero-3d-chip-top {
+  top: 32px;
+  right: 40px;
+  animation-delay: 0s;
+}
+
+.hero-3d-chip-bottom {
+  bottom: 32px;
+  left: 40px;
+  animation-delay: 2.5s;
+}
+
+@keyframes chipFloat {
+  0% { transform: translateZ(65px) translateY(0px) rotate(0deg); }
+  100% { transform: translateZ(75px) translateY(-14px) rotate(2deg); }
+}
+
+@media (max-width: 900px) {
+  .hero-3d-floating-chip {
+    display: none;
+  }
+}
+
+/* 3. Cards 3D Tilt & Glass Depth */
+.service-card,
+.product-card,
+.staff-card,
+.review-card {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
+/* Dynamic Glare Overlay on 3D Card */
+.card-3d-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  mix-blend-mode: overlay;
+}
+
+/* 3D Depth Layering on Card Children */
+.service-card .service-img-wrapper,
+.product-card .product-img-wrapper,
+.staff-card .staff-avatar-wrapper {
+  transform: translateZ(26px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.service-card .badge-popular,
+.service-card .service-duration-badge,
+.product-card .product-volume-badge,
+.product-card .product-rating-badge {
+  transform: translateZ(48px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.service-card .service-name,
+.product-card .product-name,
+.staff-card .staff-name {
+  transform: translateZ(30px);
+}
+
+.service-card .service-price,
+.product-card .product-price-box {
+  transform: translateZ(38px);
+}
+
+.service-card .service-actions-row,
+.product-card .btn-add-cart {
+  transform: translateZ(42px);
+}
+
+/* 4. VIP Card 3D Holographic Tilt */
+.vip-card-preview {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
+  cursor: grab;
+}
+
+.vip-card-hologram {
+  position: absolute;
+  inset: -100%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(247, 210, 131, 0.35) 45%,
+    rgba(147, 215, 255, 0.25) 50%,
+    rgba(255, 180, 200, 0.25) 55%,
+    rgba(255, 255, 255, 0.05) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.15s ease-out;
+  mix-blend-mode: color-dodge;
+}
+
+/* 3D Indicator Badge in Navbar */
+.mode-3d-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: linear-gradient(135deg, rgba(197, 160, 89, 0.18), rgba(15, 56, 44, 0.15));
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-hover);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(197, 160, 89, 0.15);
+}
+
+.mode-3d-badge i {
+  animation: pulseRotate 4s linear infinite;
+}
+
+@keyframes pulseRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.15); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+
