@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shinzxe Wellness & Spa | Đặt Lịch Dịch Vụ Trực Tuyến 5 Sao</title>
+  <meta name="description" content="Trải nghiệm dịch vụ chăm sóc da chuyên sâu, massage trị liệu và phục hồi tóc cao cấp tại Shinzxe Spa. Đặt lịch online nhận mã QR check-in tiện lợi.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- MOBILE NAVIGATION DRAWER & BACKDROP -->
+  <div id="mobileBackdrop" class="mobile-nav-backdrop" onclick="toggleMobileMenu()"></div>
+  <div id="mobileDrawer" class="mobile-nav-drawer">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <a href="index.html" class="logo">
+        <div class="logo-badge">✦</div>
+        <span>Shinzxe <strong>Spa</strong></span>
+      </a>
+      <button onclick="toggleMobileMenu()" style="border: none; background: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+    </div>
+    <ul style="list-style: none; display: flex; flex-direction: column; gap: 20px; font-size: 1.1rem; font-weight: 600;">
+      <li><a href="#services" onclick="toggleMobileMenu()">Liệu trình & Dịch vụ</a></li>
+      <li><a href="#products" onclick="toggleMobileMenu()">Gian hàng chăm sóc</a></li>
+      <li><a href="#specialists" onclick="toggleMobileMenu()">Đội ngũ chuyên viên</a></li>
+      <li><a href="#reviews" onclick="toggleMobileMenu()">Đánh giá khách hàng</a></li>
+      <li><a href="javascript:void(0)" onclick="toggleMobileMenu(); openLookupModal()"><i class="fa-solid fa-qrcode"></i> Tra cứu vé QR</a></li>
+      <li><a href="javascript:void(0)" onclick="toggleMobileMenu(); openMemberModal()"><i class="fa-solid fa-crown" style="color: var(--accent);"></i> Thành viên VIP Club</a></li>
+      <li><a href="javascript:void(0)" onclick="toggleMobileMenu(); openCartDrawer()"><i class="fa-solid fa-bag-shopping"></i> Giỏ hàng (<span id="mobileCartCount">0</span>)</a></li>
+    </ul>
+    <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border);">
+      <button class="btn btn-primary" style="width: 100%;" onclick="toggleMobileMenu(); openBookingModal()">
+        <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Ngay
+      </button>
+    </div>
+  </div>
+
+  <!-- HEADER & NAVIGATION (STICKY) -->
+  <header class="site-header" id="siteHeader">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-badge">✦</div>
+        <span>Shinzxe <strong style="font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent-hover);">Spa</strong></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#services">Liệu Trình & Dịch Vụ</a></li>
+        <li><a href="#products">Gian Hàng Boutique</a></li>
+        <li><a href="#specialists">Chuyên Viên</a></li>
+        <li><a href="#reviews">Đánh Giá</a></li>
+        <li><a href="javascript:void(0)" onclick="openLookupModal()"><i class="fa-solid fa-qrcode"></i> Tra Cứu Vé</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="member-nav-btn" onclick="openMemberModal()" id="navMemberBtn" title="Thành viên VIP Shinzxe">
+          <i class="fa-regular fa-user"></i> <span id="navMemberText">Thành Viên</span>
+        </button>
+        <button class="btn btn-outline" onclick="openCartDrawer()" title="Giỏ hàng sản phẩm" style="padding: 9px 16px; position: relative;">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-badge-count" id="headerCartCount" style="margin-left: 4px;">0</span>
+        </button>
+        <button class="btn btn-primary" onclick="openBookingModal()">
+          <i class="fa-regular fa-calendar-check"></i> Đặt lịch ngay
+        </button>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO PANORAMIC TRANQUIL BANNER -->
+  <section class="hero-panoramic-banner">
+    <div class="hero-banner-inner reveal">
+      <div class="badge-tag">
+        <i class="fa-solid fa-spa"></i> Không Gian Trị Liệu & Dưỡng Sinh Chuẩn 5 Sao Quốc Tế
+      </div>
+      <h1 class="hero-title">
+        Nơi Thân Tâm Tìm Về <span>Chốn Bình Yên</span> & Thư Thái Tuyệt Đối
+      </h1>
+      <p class="hero-desc">
+        Hòa mình vào không gian tĩnh lặng thoang thoảng hương trầm tự nhiên, thanh lọc tâm trí và tái sinh nguồn năng lượng tươi trẻ cùng các bậc thầy trị liệu hàng đầu tại Shinzxe Spa.
+      </p>
+
+      <div class="hero-cta" style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
+        <button class="btn btn-accent" style="padding: 16px 36px; font-size: 1.05rem;" onclick="openBookingModal()">
+          <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Hẹn Trực Tuyến
+        </button>
+        <a href="#services" class="btn btn-outline" style="padding: 16px 28px; background: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.3); backdrop-filter: blur(8px);">
+          Khám Phá Liệu Trình <i class="fa-solid fa-arrow-down"></i>
+        </a>
+        <a href="#products" class="btn btn-outline" style="padding: 16px 28px; background: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.3); backdrop-filter: blur(8px);">
+          <i class="fa-solid fa-leaf"></i> Gian Hàng Boutique
+        </a>
+      </div>
+
+      <div class="hero-banner-features">
+        <div class="hero-feature-item">
+          <i class="fa-solid fa-seedling"></i> 100% Thảo Mộc & Tinh Dầu Hữu Cơ
+        </div>
+        <div class="hero-feature-item">
+          <i class="fa-solid fa-qrcode"></i> Nhận Mã QR Check-in Tức Thì
+        </div>
+        <div class="hero-feature-item">
+          <i class="fa-solid fa-award"></i> Chuyên Gia Đạt Chứng Chỉ Quốc Tế
+        </div>
+        <div class="hero-feature-item">
+          <i class="fa-solid fa-gift"></i> Tặng Voucher 100k Cho Khách Hàng Mới
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES SECTION -->
+  <section id="services" class="section">
+    <div class="section-header reveal">
+      <div class="section-subtitle">Dịch Vụ Nổi Bật</div>
+      <h2 class="section-title">Liệu Trình Chăm Sóc Đẳng Cấp</h2>
+      <p class="section-desc">Mỗi liệu trình tại Shinzxe đều được cá nhân hóa cho từng loại da và tình trạng sức khỏe của bạn.</p>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="category-filter reveal delay-1" id="categoryTabs">
+      <button class="filter-btn active" onclick="filterServices('all', this)">Tất cả dịch vụ</button>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="services-grid" id="servicesGrid">
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top: 10px;">Đang tải danh sách dịch vụ...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GIAN HÀNG SẢN PHẨM BOUTIQUE ================= -->
+  <section id="products" class="section">
+    <div class="section-header reveal">
+      <div class="section-subtitle">Chăm Sóc & Thư Giãn Tại Nhà</div>
+      <h2 class="section-title">Gian Hàng Tinh Hoa Trị Liệu Shinzxe</h2>
+      <p class="section-desc">Bộ sưu tập tinh dầu hữu cơ, nến thơm thảo mộc và dược mỹ phẩm sinh học chuẩn Spa 5 sao để bạn duy trì vẻ đẹp và sự tĩnh tại mỗi ngày.</p>
+    </div>
+
+    <!-- Product Category Tabs -->
+    <div class="category-filter reveal delay-1" id="productCategoryTabs">
+      <button class="filter-btn active" onclick="filterProducts('all', this)">Tất cả sản phẩm</button>
+      <button class="filter-btn" onclick="filterProducts('aroma', this)">Tinh dầu & Nến thơm</button>
+      <button class="filter-btn" onclick="filterProducts('skincare', this)">Dược mỹ phẩm Phục hồi</button>
+      <button class="filter-btn" onclick="filterProducts('wellness', this)">Dưỡng sinh thư giãn</button>
+      <button class="filter-btn" onclick="filterProducts('haircare', this)">Chăm sóc tóc Thảo mộc</button>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" id="productsGrid">
+      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top: 10px;">Đang tải danh sách sản phẩm...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECIALISTS / STAFF SECTION -->
+  <section id="specialists" class="section" style="background: var(--bg-alt); border-radius: var(--radius-xl); margin-bottom: 80px;">
+    <div class="section-header reveal">
+      <div class="section-subtitle">Đội Ngũ Tận Tâm</div>
+      <h2 class="section-title">Gặp Gỡ Các Chuyên Viên Cấp Cao</h2>
+      <p class="section-desc">Được đào tạo bài bản với nhiều năm kinh nghiệm tại các viện thẩm mỹ và trung tâm trị liệu danh tiếng.</p>
+    </div>
+
+    <div class="staff-grid" id="staffGrid">
+      <!-- Dynamic Staff Cards injected here -->
+    </div>
+  </section>
+
+  <!-- CUSTOMER REVIEWS SECTION -->
+  <section id="reviews" class="section">
+    <div class="section-header reveal" style="display: flex; justify-content: space-between; align-items: flex-end; text-align: left; max-width: 100%;">
+      <div>
+        <div class="section-subtitle">Khách Hàng Nói Về Chúng Tôi</div>
+        <h2 class="section-title">Trải Nghiệm Thực Tế</h2>
+      </div>
+      <button class="btn btn-outline" onclick="openReviewModal()">
+        <i class="fa-solid fa-pen-nib"></i> Gửi đánh giá của bạn
+      </button>
+    </div>
+
+    <div class="reviews-grid" id="reviewsGrid">
+      <!-- Dynamic reviews injected here -->
+    </div>
+  </section>
+
+  <!-- ================= MODAL: ĐẶT LỊCH HẸN ================= -->
+  <div id="bookingModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title" id="bookingModalTitle">Đặt Lịch Dịch Vụ</h3>
+        <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- FORM ĐẶT LỊCH -->
+        <form id="bookingForm" onsubmit="handleBookingSubmit(event)">
+          <!-- Chọn dịch vụ -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-spa" style="color: var(--accent);"></i> Chọn Dịch vụ (*):</label>
+            <select id="modalServiceSelect" class="form-control" required onchange="handleServiceSelectionChange()">
+              <option value="">-- Chọn gói dịch vụ bạn muốn --</option>
+            </select>
+          </div>
+
+          <!-- Chọn chuyên viên -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-user-doctor" style="color: var(--accent);"></i> Chọn Chuyên viên phụ trách:</label>
+            <select id="modalStaffSelect" class="form-control" onchange="fetchAvailableSlots()">
+              <option value="">-- Bất kỳ chuyên viên nào (Phục vụ nhanh nhất) --</option>
+            </select>
+          </div>
+
+          <!-- Ngày & Khung giờ -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label class="form-label"><i class="fa-regular fa-calendar" style="color: var(--accent);"></i> Chọn Ngày (*):</label>
+              <input type="date" id="bookingDateInput" class="form-control" required onchange="fetchAvailableSlots()">
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fa-regular fa-clock" style="color: var(--accent);"></i> Khung Giờ (*):</label>
+              <input type="text" id="selectedTimeInput" class="form-control" placeholder="Bấm chọn giờ bên dưới" readonly required>
+            </div>
+          </div>
+
+          <!-- Time slots container -->
+          <div class="form-group">
+            <label class="form-label" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 500;">
+              Khung giờ còn trống trong ngày (màu xám là đã có khách đặt):
+            </label>
+            <div class="slots-container" id="timeSlotsContainer">
+              <div style="font-size: 0.85rem; color: var(--text-muted); grid-column: 1/-1;">Vui lòng chọn ngày để xem giờ trống</div>
+            </div>
+          </div>
+
+          <!-- Thông tin khách hàng -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label class="form-label"><i class="fa-solid fa-user" style="color: var(--accent);"></i> Họ và tên (*):</label>
+              <input type="text" id="customerNameInput" class="form-control" placeholder="Nguyễn Văn A" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fa-solid fa-phone" style="color: var(--accent);"></i> Số điện thoại (*):</label>
+              <input type="tel" id="customerPhoneInput" class="form-control" placeholder="0912345678" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-envelope" style="color: var(--accent);"></i> Email (để nhận xác nhận & mã QR):</label>
+            <input type="email" id="customerEmailInput" class="form-control" placeholder="khachhang@gmail.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-notes-medical" style="color: var(--accent);"></i> Ghi chú thêm (loại da, yêu cầu đặc biệt):</label>
+            <textarea id="bookingNoteInput" class="form-control" rows="2" placeholder="Ví dụ: Da mụn nhạy cảm, massage nhẹ nhàng..."></textarea>
+          </div>
+
+          <!-- MÃ GIẢM GIÁ & CHI TIẾT THANH TOÁN -->
+          <div class="booking-coupon-box" style="background: #faf8f5; border: 1px dashed var(--accent); padding: 16px; border-radius: var(--radius-md); margin-top: 14px;">
+            <label class="form-label" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span><i class="fa-solid fa-ticket" style="color: var(--accent);"></i> Mã giảm giá / Voucher:</span>
+              <span id="couponHintBadge" style="font-size: 0.76rem; color: var(--accent); background: rgba(197,160,89,0.12); padding: 2px 8px; border-radius: 999px;">Gợi ý: SHINZXEVIP10, SHINZXE100K</span>
+            </label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="bookingCouponInput" class="form-control" placeholder="Nhập mã (VD: SHINZXEVIP10)" style="text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+              <button type="button" class="btn btn-outline" id="btnApplyCoupon" onclick="applyBookingCoupon()" style="white-space: nowrap; padding: 0 18px; font-weight: 600;">
+                Áp Dụng
+              </button>
+            </div>
+            <div id="couponFeedback" style="font-size: 0.82rem; margin-top: 6px; display: none;"></div>
+
+            <!-- Tóm tắt thanh toán -->
+            <div id="bookingPriceBreakdown" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.06); font-size: 0.88rem;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--text-muted);">
+                <span>Giá dịch vụ gốc:</span>
+                <span id="bookingOriginalPriceText">0 đ</span>
+              </div>
+              <div id="bookingDiscountRow" style="display: none; justify-content: space-between; margin-bottom: 4px; color: var(--success); font-weight: 600;">
+                <span id="bookingDiscountLabel">Giảm giá:</span>
+                <span id="bookingDiscountAmountText">-0 đ</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; color: var(--primary); font-size: 1.05rem; margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,0.08);">
+                <span>Tổng tiền thanh toán:</span>
+                <span id="bookingFinalPriceText" style="color: var(--accent-hover); font-size: 1.25rem;">0 đ</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeBookingModal()">Hủy</button>
+            <button type="submit" class="btn btn-primary" style="flex: 2;" id="btnSubmitBooking">
+              <i class="fa-solid fa-check"></i> Xác Nhận Đặt Lịch
+            </button>
+          </div>
+        </form>
+
+        <!-- KẾT QUẢ VÉ ĐẶT LỊCH KÈM MÃ QR -->
+        <div id="bookingResultArea" style="display: none;">
+          <div class="ticket-card">
+            <div style="color: var(--success); font-size: 2.4rem; margin-bottom: 8px;">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h4 style="font-size: 1.35rem; color: var(--primary); margin-bottom: 4px;">Đặt Lịch Thành Công!</h4>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px;">
+              Hệ thống đã lưu lịch hẹn và tạo mã vé điện tử cho bạn.
+            </p>
+
+            <div class="ticket-code" id="resultBookingCode">LM-0000</div>
+            <img id="resultQrCode" src="" alt="QR Code Check-in" class="ticket-qr">
+
+            <div class="ticket-info-list" id="resultTicketInfo">
+              <!-- Dynamically rendered -->
+            </div>
+
+            <p style="font-size: 0.84rem; color: var(--text-muted);">
+              <i class="fa-solid fa-circle-info"></i> Hãy đưa mã QR này cho lễ tân khi bạn đến tiệm để được check-in tức thì!
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-outline" style="flex: 1;" onclick="window.print()">
+              <i class="fa-solid fa-print"></i> In / Lưu vé
+            </button>
+            <button class="btn btn-primary" style="flex: 1;" onclick="resetBookingForm()">
+              <i class="fa-solid fa-plus"></i> Đặt lịch khác
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: TRA CỨU LỊCH HẸN ================= -->
+  <div id="lookupModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-magnifying-glass" style="color: var(--accent);"></i> Tra Cứu Lịch Hẹn</h3>
+        <button class="modal-close" onclick="closeLookupModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+          <input type="text" id="lookupInput" class="form-control" placeholder="Nhập Số điện thoại hoặc Mã đặt chỗ (VD: LM-8421)">
+          <button class="btn btn-primary" onclick="handleLookupSubmit()">
+            <i class="fa-solid fa-search"></i> Tìm
+          </button>
+        </div>
+
+        <div id="lookupResultsArea">
+          <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+            Nhập số điện thoại bạn đã dùng khi đặt lịch để xem danh sách vé hẹn và mã QR.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: VIẾT ĐÁNH GIÁ ================= -->
+  <div id="reviewModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Đánh Giá Dịch Vụ</h3>
+        <button class="modal-close" onclick="closeReviewModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleReviewSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Tên của bạn (*):</label>
+            <input type="text" id="reviewName" class="form-control" placeholder="Nguyễn Văn A" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Dịch vụ đã sử dụng:</label>
+            <select id="reviewServiceSelect" class="form-control">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Số sao đánh giá (*):</label>
+            <select id="reviewRating" class="form-control">
+              <option value="5">⭐⭐⭐⭐⭐ 5 sao - Cực kỳ hài lòng</option>
+              <option value="4">⭐⭐⭐⭐ 4 sao - Hài lòng</option>
+              <option value="3">⭐⭐⭐ 3 sao - Bình thường</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cảm nhận của bạn (*):</label>
+            <textarea id="reviewComment" class="form-control" rows="3" placeholder="Chia sẻ cảm nhận về tay nghề chuyên viên, không gian spa..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i class="fa-solid fa-paper-plane"></i> Gửi Đánh Giá Ngay
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= AI CONCIERGE CHATBOT WIDGET ================= -->
+  <div class="ai-chat-widget">
+    <div class="ai-chat-box" id="aiChatBox">
+      <div class="ai-chat-header">
+        <h4><div class="ai-sparkle-dot"></div> Shinzxe AI Concierge</h4>
+        <button onclick="toggleAiChat()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+      </div>
+      <div class="ai-messages-area" id="aiMessagesArea">
+        <div class="chat-bubble bubble-ai">
+          Chào bạn! Mình là Shinzxe AI - Trợ lý chăm sóc sắc đẹp & sức khỏe 24/7. Bạn đang muốn tìm liệu trình gì hôm nay ạ?
+        </div>
+        <div class="ai-suggestions">
+          <div class="suggestion-chip" onclick="askAiChip('Da mụn cám bít tắc nên làm gói nào?')">Da mụn & thâm?</div>
+          <div class="suggestion-chip" onclick="askAiChip('Gói trị liệu cổ vai gáy giá bao nhiêu?')">Đau mỏi vai gáy?</div>
+          <div class="suggestion-chip" onclick="askAiChip('Massage body đá nóng thư giãn?')">Massage body?</div>
+          <div class="suggestion-chip" onclick="askAiChip('Giờ mở cửa của quán thế nào?')">Giờ mở cửa?</div>
+        </div>
+      </div>
+      <div class="ai-input-area">
+        <input type="text" id="aiInput" class="ai-input" placeholder="Hỏi AI về da, giá, dịch vụ..." onkeydown="if(event.key==='Enter') sendAiMessage()">
+        <button class="ai-send-btn" onclick="sendAiMessage()">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+    <button class="ai-chat-btn" onclick="toggleAiChat()">
+      <div class="ai-sparkle-dot"></div>
+      <span>✦ Trợ lý AI Tư Vấn</span>
+    </button>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <h3>Shinzxe Wellness & Spa</h3>
+        <p>Không gian trị liệu & trẻ hóa chuẩn 5 sao. Nơi hồi sinh sự cân bằng cho tâm trí và cơ thể với tinh hoa thảo mộc tự nhiên.</p>
+        <div style="margin-top: 18px; color: var(--accent); font-size: 0.92rem; line-height: 1.8;">
+          <div><i class="fa-solid fa-location-dot"></i> Tầng 3, Shinzxe Center, Q.1, TP.HCM</div>
+          <div><i class="fa-solid fa-phone"></i> Hotline: 1900 8899 (8h30 - 20h00)</div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Dịch Vụ Nổi Bật</h4>
+        <ul>
+          <li><a href="#services">Chăm sóc da Oxy Tươi</a></li>
+          <li><a href="#services">Trẻ hóa Collagen Căng bóng</a></li>
+          <li><a href="#services">Massage Đá nóng Thụy Điển</a></li>
+          <li><a href="#services">Trị liệu Cổ vai gáy</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Liên Kết Nhanh</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="openBookingModal()">Đặt lịch trực tuyến</a></li>
+          <li><a href="javascript:void(0)" onclick="openLookupModal()">Kiểm tra mã vé QR</a></li>
+          <li><a href="#specialists">Đội ngũ chuyên gia</a></li>
+
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Đồ Án Môn Học</h4>
+        <p style="font-size: 0.88rem; color: #9cb5ab; line-height: 1.6;">
+          Hệ thống Đặt lịch Dịch vụ Trực tuyến & Quản trị Thông minh.<br>
+          Ứng dụng công nghệ: Node.js, Express, Chart.js, QR Code, Responsive Design.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      &copy; 2026 Shinzxe Spa & Clinic. Báo cáo đề tài môn học Lập trình Web. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- ================= MODAL: CHI TIẾT DỊCH VỤ & QUY TRÌNH ================= -->
+  <div id="serviceDetailModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 680px; padding: 0; overflow: hidden; border-radius: var(--radius-xl);">
+      <div id="serviceDetailBody">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= GIỎ HÀNG SLIDE-OVER DRAWER ================= -->
+  <div id="cartDrawerBackdrop" class="cart-drawer-backdrop" onclick="closeCartDrawer()"></div>
+  <div id="cartDrawer" class="cart-drawer">
+    <div class="cart-header">
+      <div class="cart-title">
+        <i class="fa-solid fa-bag-shopping" style="color: var(--accent);"></i> Giỏ Hàng Boutique
+      </div>
+      <button onclick="closeCartDrawer()" style="background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+    </div>
+    <div class="cart-items-list" id="cartItemsList">
+      <!-- Injected dynamically -->
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Tổng thanh toán:</span>
+        <span id="cartTotalPrice" style="color: var(--accent-hover);">0 đ</span>
+      </div>
+      <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;" onclick="openOrderModal()">
+        <i class="fa-solid fa-truck-fast"></i> Đặt Mua & Giao Hàng Ngay
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ĐẶT MUA SẢN PHẨM ================= -->
+  <div id="orderModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-box" style="color: var(--accent);"></i> Xác Nhận Đơn Hàng</h3>
+        <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="orderForm" onsubmit="handleOrderSubmit(event)">
+          <div style="background: var(--bg-alt); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 18px; font-size: 0.9rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <span style="color: var(--text-muted);">Số lượng sản phẩm:</span>
+              <strong id="orderItemCount">0 món</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 1.05rem; font-weight: 700; color: var(--primary);">
+              <span>Tổng tiền cần thanh toán:</span>
+              <span id="orderFinalAmount" style="color: var(--accent-hover);">0 đ</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-user" style="color: var(--accent);"></i> Họ tên người nhận (*):</label>
+            <input type="text" id="orderCustomerName" class="form-control" required placeholder="Nguyễn Văn A">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-phone" style="color: var(--accent);"></i> Số điện thoại giao hàng (*):</label>
+            <input type="tel" id="orderCustomerPhone" class="form-control" required placeholder="0912345678">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-location-dot" style="color: var(--accent);"></i> Địa chỉ nhận hàng (*):</label>
+            <textarea id="orderCustomerAddress" class="form-control" required rows="2" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-regular fa-comment-dots" style="color: var(--accent);"></i> Ghi chú giao hàng:</label>
+            <input type="text" id="orderNote" class="form-control" placeholder="Giao giờ hành chính, gọi trước khi giao...">
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 24px;">
+            <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeOrderModal()">Quay lại</button>
+            <button type="submit" class="btn btn-primary" style="flex: 2;" id="btnSubmitOrder">
+              <i class="fa-solid fa-check"></i> Xác Nhận Mua Hàng
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: THÀNH VIÊN VIP PRIVILEGE CLUB ================= -->
+  <div id="memberModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-crown" style="color: var(--accent);"></i> Shinzxe Privilege Club</h3>
+        <button class="modal-close" onclick="closeMemberModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="memberModalBody">
+        <!-- Rendered dynamically: Profile if logged in, or Auth Form -->
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING CART BUTTON -->
+  <button class="btn-floating-cart" id="floatingCartBtn" onclick="openCartDrawer()" title="Xem giỏ hàng boutique">
+    <i class="fa-solid fa-bag-shopping" style="color: #f7d283;"></i>
+    <span>Giỏ Hàng</span>
+    <span class="cart-badge-count" id="floatingCartCount">0</span>
+  </button>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

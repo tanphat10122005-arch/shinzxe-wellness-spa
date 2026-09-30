@@ -1,0 +1,481 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Chăm sóc Da & Điều trị",
+      "icon": "sparkles",
+      "description": "Liệu trình trẻ hóa, phục hồi và làm sáng da chuyên sâu"
+    },
+    {
+      "id": 2,
+      "name": "Massage & Trị liệu Thư giãn",
+      "icon": "heart",
+      "description": "Giải tỏa căng thẳng cơ khớp với thảo mộc tự nhiên"
+    },
+    {
+      "id": 3,
+      "name": "Tóc & Tạo mẫu Cao cấp",
+      "icon": "scissors",
+      "description": "Cắt tạo kiểu, phục hồi keratin và uốn nhuộm thời thượng"
+    },
+    {
+      "id": 4,
+      "name": "Nail Care & Spa Thảo dược",
+      "icon": "flower",
+      "description": "Chăm sóc móng chuẩn organic và ngâm chân thảo mộc"
+    }
+  ],
+  "services": [
+    {
+      "id": 3,
+      "categoryId": 1,
+      "name": "Trị liệu Mụn Chuyên sâu & Kháng khuẩn Ánh sáng",
+      "price": 550000,
+      "duration": 90,
+      "image": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80",
+      "description": "Lấy nhân mụn chuẩn y khoa, diệt khuẩn bằng tia Plasma lạnh và đắp mặt nạ thảo dược làm dịu.",
+      "popular": false
+    },
+    {
+      "id": 4,
+      "categoryId": 2,
+      "name": "Massage Toàn thân Đá nóng Thụy Điển",
+      "price": 520000,
+      "duration": 60,
+      "image": "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=600&q=80",
+      "description": "Kết hợp tinh dầu lavender thiên nhiên và đá bazan nóng giúp đả thông kinh lạc, ngủ ngon.",
+      "popular": true
+    },
+    {
+      "id": 5,
+      "categoryId": 2,
+      "name": "Trị liệu Cổ Vai Gáy & Giảm Đau Cột sống",
+      "price": 380000,
+      "duration": 45,
+      "image": "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=600&q=80",
+      "description": "Tập trung khai thông các điểm tắc nghẽn cơ vùng gáy, đặc biệt thích hợp cho người làm việc văn phòng.",
+      "popular": true
+    },
+    {
+      "id": 6,
+      "categoryId": 3,
+      "name": "Cắt tạo kiểu & Gội đầu Dưỡng sinh Hoàng Gia",
+      "price": 300000,
+      "duration": 60,
+      "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80",
+      "description": "Gội đầu bằng nước bồ kết nấu tươi, mát-xa bấm huyệt da đầu, kết hợp sấy tạo mẫu chuyên nghiệp.",
+      "popular": false
+    },
+    {
+      "id": 7,
+      "categoryId": 3,
+      "name": "Phục hồi Tóc Chuyên sâu Keratin Nano",
+      "price": 680000,
+      "duration": 90,
+      "image": "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=600&q=80",
+      "description": "Bù đắp protein và độ ẩm cho tóc xơ rối gãy rụng do uốn nhuộm nhiều lần, trả lại mái tóc suôn mượt.",
+      "popular": false
+    },
+    {
+      "id": 8,
+      "categoryId": 4,
+      "name": "Combo Spa Chân Thảo mộc & Sơn Gel Cao cấp",
+      "price": 320000,
+      "duration": 50,
+      "image": "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=600&q=80",
+      "description": "Ngâm chân muối khoáng gừng sả, tẩy da chết nhẹ nhàng và sơn gel móng tay/chân bền đẹp chuẩn Hàn.",
+      "popular": false
+    }
+  ],
+  "staff": [
+    {
+      "id": 1,
+      "name": "Elena Nguyễn",
+      "title": "Chuyên gia Da liễu & Thẩm mỹ",
+      "experience": "7 năm kinh nghiệm",
+      "rating": 4.9,
+      "avatar": "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&w=300&q=80"
+    },
+    {
+      "id": 2,
+      "name": "Trần Anh Vũ",
+      "title": "Master Trị liệu Cổ vai gáy & Massage",
+      "experience": "5 năm kinh nghiệm",
+      "rating": 4.8,
+      "avatar": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=300&q=80"
+    },
+    {
+      "id": 3,
+      "name": "Hà My Phạm",
+      "title": "Chuyên viên Dưỡng sinh & Skincare",
+      "experience": "4 năm kinh nghiệm",
+      "rating": 5,
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80"
+    },
+    {
+      "id": 4,
+      "name": "Bảo Long",
+      "title": "Hair Stylist & Phục hồi tóc",
+      "experience": "6 năm kinh nghiệm",
+      "rating": 4.9,
+      "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80"
+    }
+  ],
+  "bookings": [
+    {
+      "id": 11,
+      "bookingCode": "LM-6879",
+      "customerName": "Nguyễn Văn Test",
+      "customerPhone": "0988776655",
+      "customerEmail": "test@example.com",
+      "serviceId": 3,
+      "serviceName": "Trị liệu Mụn Chuyên sâu & Kháng khuẩn Ánh sáng",
+      "staffId": 1,
+      "staffName": "Elena Nguyễn",
+      "date": "2026-09-30",
+      "time": "14:30",
+      "price": 495000,
+      "originalPrice": 550000,
+      "discountAmount": 55000,
+      "discountCode": "SHINZXEVIP10",
+      "status": "confirmed",
+      "note": "Áp dụng mã VIP test",
+      "createdAt": "2026-09-30T04:50:50.887Z"
+    },
+    {
+      "id": 10,
+      "bookingCode": "LM-7389",
+      "customerName": "a",
+      "customerPhone": "0123456789",
+      "customerEmail": "a@gmail.com",
+      "serviceId": 3,
+      "serviceName": "Trị liệu Mụn Chuyên sâu & Kháng khuẩn Ánh sáng",
+      "staffId": 2,
+      "staffName": "Trần Anh Vũ",
+      "date": "2026-09-30",
+      "time": "10:30",
+      "price": 550000,
+      "status": "confirmed",
+      "note": "",
+      "createdAt": "2026-09-30T04:40:33.091Z"
+    },
+    {
+      "id": 9,
+      "bookingCode": "LM-7982",
+      "customerName": "a",
+      "customerPhone": "1",
+      "customerEmail": "a@gmail.com",
+      "serviceId": 4,
+      "serviceName": "Massage Toàn thân Đá nóng Thụy Điển",
+      "staffId": 1,
+      "staffName": "Elena Nguyễn",
+      "date": "2026-09-30",
+      "time": "08:30",
+      "price": 520000,
+      "status": "completed",
+      "note": "",
+      "createdAt": "2026-09-30T04:35:03.436Z"
+    },
+    {
+      "id": 8,
+      "bookingCode": "LM-4170",
+      "customerName": "b",
+      "customerPhone": "0123456789",
+      "customerEmail": "a@gmail.com",
+      "serviceId": 4,
+      "serviceName": "Massage Toàn thân Đá nóng Thụy Điển",
+      "staffId": 2,
+      "staffName": "Trần Anh Vũ",
+      "date": "2026-09-30",
+      "time": "09:30",
+      "price": 520000,
+      "status": "completed",
+      "note": "",
+      "createdAt": "2026-09-30T04:03:54.754Z"
+    },
+    {
+      "id": 7,
+      "bookingCode": "LM-7422",
+      "customerName": "aa",
+      "customerPhone": "12344454566",
+      "customerEmail": "a@gmail.com",
+      "serviceId": 3,
+      "serviceName": "Trị liệu Mụn Chuyên sâu & Kháng khuẩn Ánh sáng",
+      "staffId": 1,
+      "staffName": "Elena Nguyễn",
+      "date": "2026-09-30",
+      "time": "09:30",
+      "price": 550000,
+      "status": "completed",
+      "note": "",
+      "createdAt": "2026-09-30T03:59:59.986Z"
+    },
+    {
+      "id": 6,
+      "bookingCode": "LM-3854",
+      "customerName": "phat",
+      "customerPhone": "0123456789",
+      "customerEmail": "abc@gmail.com",
+      "serviceId": 4,
+      "serviceName": "Massage Toàn thân Đá nóng Thụy Điển",
+      "staffId": 2,
+      "staffName": "Trần Anh Vũ",
+      "date": "2026-09-30",
+      "time": "11:30",
+      "price": 520000,
+      "status": "completed",
+      "note": "",
+      "createdAt": "2026-09-30T03:58:56.103Z"
+    },
+    {
+      "id": 5,
+      "bookingCode": "LM-2850",
+      "customerName": "Tran Thi Mai",
+      "customerPhone": "0912999888",
+      "customerEmail": "khachhang@example.com",
+      "serviceId": 1,
+      "serviceName": "Chăm sóc da Oxy Tươi Hydro-Facial",
+      "staffId": 1,
+      "staffName": "Elena Nguyễn",
+      "date": "2026-10-01",
+      "time": "09:30",
+      "price": 450000,
+      "status": "completed",
+      "note": "",
+      "createdAt": "2026-09-30T03:47:41.708Z"
+    },
+    {
+      "id": 1,
+      "bookingCode": "LM-8421",
+      "customerName": "Nguyễn Thu Trang",
+      "customerPhone": "0912345678",
+      "customerEmail": "thutrang@gmail.com",
+      "serviceId": 1,
+      "serviceName": "Chăm sóc da Oxy Tươi Hydro-Facial",
+      "staffId": 1,
+      "staffName": "Elena Nguyễn",
+      "date": "2026-09-28",
+      "time": "09:00",
+      "price": 450000,
+      "status": "completed",
+      "note": "Khách da nhạy cảm nhẹ",
+      "createdAt": "2026-09-27T10:00:00Z"
+    },
+    {
+      "id": 2,
+      "bookingCode": "LM-9032",
+      "customerName": "Lê Hoàng Quân",
+      "customerPhone": "0988776655",
+      "customerEmail": "quan.le@gmail.com",
+      "serviceId": 4,
+      "serviceName": "Massage Toàn thân Đá nóng Thụy Điển",
+      "staffId": 2,
+      "staffName": "Trần Anh Vũ",
+      "date": "2026-09-29",
+      "time": "14:00",
+      "price": 520000,
+      "status": "completed",
+      "note": "Yêu cầu ấn lực mạnh vùng vai",
+      "createdAt": "2026-09-28T11:15:00Z"
+    },
+    {
+      "id": 3,
+      "bookingCode": "LM-1156",
+      "customerName": "Đỗ Mai Linh",
+      "customerPhone": "0905123987",
+      "customerEmail": "mailinh.do@gmail.com",
+      "serviceId": 2,
+      "serviceName": "Liệu trình Trẻ hóa Da Căng bóng Collagen",
+      "staffId": 3,
+      "staffName": "Hà My Phạm",
+      "date": "2026-09-30",
+      "time": "10:30",
+      "price": 750000,
+      "status": "completed",
+      "note": "Khách hẹn đúng giờ",
+      "createdAt": "2026-09-29T16:20:00Z"
+    },
+    {
+      "id": 4,
+      "bookingCode": "LM-6789",
+      "customerName": "Phạm Quốc Huy",
+      "customerPhone": "0934567890",
+      "customerEmail": "huy.pham@gmail.com",
+      "serviceId": 5,
+      "serviceName": "Trị liệu Cổ Vai Gáy & Giảm Đau Cột sống",
+      "staffId": 2,
+      "staffName": "Trần Anh Vũ",
+      "date": "2026-09-30",
+      "time": "15:00",
+      "price": 380000,
+      "status": "completed",
+      "note": "Đặt qua website",
+      "createdAt": "2026-09-30T08:00:00Z"
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "customerName": "Chị Minh Thư (Hà Nội)",
+      "serviceName": "Chăm sóc da Oxy Tươi Hydro-Facial",
+      "rating": 5,
+      "date": "2 ngày trước",
+      "comment": "Dịch vụ cực kỳ êm ái, bạn Elena tư vấn rất kỹ về cách chăm sóc da tại nhà. Da làm xong mướt mịn trông thấy!"
+    },
+    {
+      "id": 2,
+      "customerName": "Anh Tuấn Minh",
+      "serviceName": "Trị liệu Cổ Vai Gáy",
+      "rating": 5,
+      "date": "Hôm qua",
+      "comment": "Dân IT ngồi máy tính nhiều đau ê ẩm vai gáy, đi trị liệu 45 phút về nhẹ hẳn cả người. Rất đáng tiền!"
+    },
+    {
+      "id": 3,
+      "customerName": "Bạn Thảo Vy",
+      "serviceName": "Cắt tạo kiểu & Gội dưỡng sinh",
+      "rating": 5,
+      "date": "Hôm nay",
+      "comment": "Không gian spa thơm mùi tinh dầu sả chanh thư giãn vô cùng, đặt lịch online nhanh chóng không phải chờ đợi."
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Tinh Dầu Oải Hương Pháp Hữu Cơ",
+      "subName": "Organic French Lavender Essential Oil",
+      "price": 390000,
+      "originalPrice": 480000,
+      "volume": "30ml",
+      "rating": 5,
+      "reviewsCount": 38,
+      "category": "aroma",
+      "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=500&q=80",
+      "description": "Chiết xuất 100% từ hoa oải hương Provence Pháp thuần khiết, giúp giải tỏa âu lo, ngủ sâu giấc và cân bằng năng lượng cơ thể.",
+      "inStock": true
+    },
+    {
+      "id": 2,
+      "name": "Serum Sinh Học Phục Hồi B5 & Multi-HA",
+      "subName": "Hydra-Repair B5 Ampoule Serum",
+      "price": 680000,
+      "originalPrice": 850000,
+      "volume": "50ml",
+      "rating": 4.9,
+      "reviewsCount": 52,
+      "category": "skincare",
+      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=500&q=80",
+      "description": "Công thức độc quyền kết hợp B5 tinh khiết và 5 phân tử Hyaluronic Acid, cấp ẩm tức thì và tái sinh hàng rào bảo vệ da sau 7 ngày.",
+      "inStock": true
+    },
+    {
+      "id": 3,
+      "name": "Nến Thơm Trầm Hương & Hoa Hoàng Lan",
+      "subName": "Botanical Soy Wax Relaxing Candle",
+      "price": 350000,
+      "originalPrice": 420000,
+      "volume": "220g",
+      "rating": 4.9,
+      "reviewsCount": 29,
+      "category": "aroma",
+      "image": "https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=500&q=80",
+      "description": "Làm từ 100% sáp đậu nành thiên nhiên và bấc gỗ, tỏa hương ấm áp của trầm hương cổ thụ và hoàng lan dịu ngọt, thanh lọc không gian.",
+      "inStock": true
+    },
+    {
+      "id": 4,
+      "name": "Muối Biển Chết Ngâm Chân Thảo Dược",
+      "subName": "Dead Sea Herbal Mineral Foot Soak",
+      "price": 250000,
+      "originalPrice": 300000,
+      "volume": "500g",
+      "rating": 4.8,
+      "reviewsCount": 44,
+      "category": "wellness",
+      "image": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=500&q=80",
+      "description": "Muối khoáng tự nhiên giàu magie kết hợp gừng già, quế khâu và ngải cứu, hỗ trợ giảm nhức mỏi chân, thúc đẩy tuần hoàn máu.",
+      "inStock": true
+    },
+    {
+      "id": 5,
+      "name": "Bộ Gội & Xả Dưỡng Sinh Bồ Kết Hà Thủ Ô",
+      "subName": "Revitalizing Herbal Hair Care Duo",
+      "price": 450000,
+      "originalPrice": 560000,
+      "volume": "Set 2x300ml",
+      "rating": 5,
+      "reviewsCount": 67,
+      "category": "haircare",
+      "image": "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=500&q=80",
+      "description": "Chưng cất cô đặc từ bồ kết nướng than hoa, hà thủ ô đỏ và vỏ bưởi da xanh, giúp phục hồi tóc hư tổn, làm phồng chân tóc tự nhiên.",
+      "inStock": true
+    },
+    {
+      "id": 6,
+      "name": "Mặt Nạ Đất Sét Khoáng Hồng Pháp Thải Độc",
+      "subName": "French Pink Clay Gentle Detox Mask",
+      "price": 380000,
+      "originalPrice": 460000,
+      "volume": "100ml",
+      "rating": 4.9,
+      "reviewsCount": 31,
+      "category": "skincare",
+      "image": "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=500&q=80",
+      "description": "Thanh lọc nhẹ nhàng bụi mịn và bã nhờn sâu trong nang lông mà không gây khô căng da, bổ sung khoáng chất làm sáng da hồng hào.",
+      "inStock": true
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "orderCode": "OD-8796",
+      "customerName": "Phan Van Minh",
+      "customerPhone": "0987654321",
+      "customerAddress": "123 L� L?i, Q.1, TP.HCM",
+      "note": "Giao bu?i chi?u",
+      "items": [
+        {
+          "price": 390000,
+          "name": "Tinh D?u O?i Huong Ph�p",
+          "id": 1,
+          "qty": 2
+        }
+      ],
+      "totalAmount": 780000,
+      "status": "pending",
+      "createdAt": "2026-09-30T04:30:13.960Z"
+    }
+  ],
+  "members": [
+    {
+      "id": 1,
+      "name": "Trương Tấn Phát",
+      "phone": "0901234567",
+      "email": "member@shinzxe.vn",
+      "password": "123",
+      "tier": "Thành Viên Vàng (VIP)",
+      "points": 450,
+      "joinDate": "01/2026"
+    },
+    {
+      "id": 2,
+      "name": "Kh�ch H�ng M?i",
+      "phone": "0971181875",
+      "email": "test1068@gmail.com",
+      "password": "MySecurePassword@2026",
+      "tier": "Thành Viên Thân Thiết (Silver)",
+      "points": 100,
+      "joinDate": "30/9/2026"
+    },
+    {
+      "id": 3,
+      "name": "a",
+      "phone": "1234",
+      "email": "a@gmail.com",
+      "password": "123123",
+      "tier": "Thành Viên Thân Thiết (Silver)",
+      "points": 100,
+      "joinDate": "30/9/2026"
+    }
+  ]
+}

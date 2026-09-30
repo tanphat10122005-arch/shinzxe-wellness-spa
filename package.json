@@ -1,0 +1,19 @@
+{
+  "name": "shinzxe-spa-booking",
+  "version": "1.0.0",
+  "description": "Hệ thống Đặt lịch Dịch vụ Trực tuyến & Quản lý Spa / Salon / Phòng khám",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["booking", "spa", "salon", "web-programming", "chartjs", "ai-chat"],
+  "author": "Student",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "qrcode": "^1.5.4"
+  }
+}

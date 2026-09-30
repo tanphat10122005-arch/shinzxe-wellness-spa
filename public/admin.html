@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Quản Lý Lịch Hẹn & Dịch Vụ Shinzxe</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN phục vụ vẽ biểu đồ doanh thu và thống kê -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <!-- ================= MÀN HÌNH ĐĂNG NHẬP ADMIN ================= -->
+  <div id="loginScreen" style="
+    position: fixed; inset: 0; z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 50% 20%, #1e3a2f 0%, #0d1a15 100%);
+    font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 20px;
+  ">
+    <div style="
+      width: 100%; max-width: 420px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(197, 160, 89, 0.2);
+      padding: 40px 36px;
+      text-align: center;
+    ">
+      <div style="width: 64px; height: 64px; margin: 0 auto 18px; background: linear-gradient(135deg, #1b382b, #2d5543); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 16px rgba(27, 56, 43, 0.3);">
+        <i class="fa-solid fa-gem" style="color: #c5a059; font-size: 28px;"></i>
+      </div>
+      <h2 style="font-family: 'Playfair Display', serif, Georgia; color: #1b382b; font-size: 1.75rem; margin-bottom: 6px; font-weight: 700;">Shinzxe Admin</h2>
+      <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 24px;">Hệ thống quản trị & điều phối lịch hẹn</p>
+
+      <div id="loginError" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 18px; text-align: left;">
+        <i class="fa-solid fa-circle-exclamation" style="margin-right: 6px;"></i>
+        <span id="loginErrorMsg">Tài khoản hoặc mật khẩu không chính xác!</span>
+      </div>
+
+      <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" style="text-align: left;">
+        <div style="margin-bottom: 18px;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 6px;">Tài khoản Quản trị</label>
+          <div style="position: relative;">
+            <i class="fa-solid fa-user" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+            <input type="text" id="loginUsername" required autocomplete="username" placeholder="Nhập tên tài khoản..." style="width: 100%; padding: 12px 14px 12px 40px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none; transition: all 0.2s; box-sizing: border-box;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 6px;">Mật khẩu</label>
+          <div style="position: relative;">
+            <i class="fa-solid fa-lock" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+            <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="Nhập mật khẩu..." style="width: 100%; padding: 12px 14px 12px 40px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none; transition: all 0.2s; box-sizing: border-box;">
+          </div>
+        </div>
+
+        <button type="submit" id="loginBtn" style="width: 100%; padding: 13px; background: linear-gradient(135deg, #1b382b, #2d5543); color: #ffffff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(27, 56, 43, 0.25); transition: all 0.2s;">
+          <i class="fa-solid fa-right-to-bracket"></i> Đăng Nhập
+        </button>
+      </form>
+
+      <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 0.85rem;">
+        <a href="index.html" style="color: #1b382b; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-arrow-left" style="font-size: 0.8rem;"></i> Về website khách hàng
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= NỘI DUNG DASHBOARD (Ẩn cho đến khi đăng nhập) ================= -->
+  <div id="adminDashboard" style="display: none;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="admin.html" class="sidebar-logo">
+      <i class="fa-solid fa-gem" style="color: var(--admin-accent);"></i>
+      <span>Shinzxe</span> Admin
+    </a>
+
+    <ul class="sidebar-menu">
+      <li>
+        <a href="#dashboard" class="sidebar-link active" onclick="switchTab('dashboard', this)">
+          <i class="fa-solid fa-chart-pie"></i> Tổng Quan & Báo Cáo
+        </a>
+      </li>
+      <li>
+        <a href="#bookings" class="sidebar-link" onclick="switchTab('bookings', this)">
+          <i class="fa-solid fa-calendar-check"></i> Quản Lý Lịch Hẹn
+        </a>
+      </li>
+      <li>
+        <a href="#services" class="sidebar-link" onclick="switchTab('services', this)">
+          <i class="fa-solid fa-spa"></i> Quản Lý Dịch Vụ
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <a href="javascript:void(0)" class="sidebar-link" onclick="handleAdminLogout()" style="color: #ef4444;">
+        <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất Tài Khoản
+      </a>
+      <a href="index.html" class="sidebar-link" style="color: #94a3b8;">
+        <i class="fa-solid fa-arrow-left"></i> Về Website Khách Hàng
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN ADMIN CONTENT -->
+  <main class="admin-main">
+    <div class="admin-header">
+      <div>
+        <h1 id="pageTitle">Trung Tâm Quản Trị & Thống Kê</h1>
+        <p>Theo dõi doanh thu, điều phối chuyên viên và duyệt lịch hẹn thời gian thực.</p>
+      </div>
+      <div>
+        <span
+          style="background: #e2e8f0; padding: 8px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 600;">
+          <i class="fa-regular fa-clock"></i> <span id="currentDateTime"></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- QUICK CHECK-IN BANNER (CHECK-IN BẰNG MÃ QR / CODE) -->
+    <div class="quick-checkin-banner">
+      <div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 4px;">
+          <i class="fa-solid fa-qrcode" style="color: var(--admin-accent);"></i> Quét / Check-in Nhanh Cho Khách
+        </h3>
+        <p style="font-size: 0.85rem; opacity: 0.9;">Nhập mã đặt chỗ hoặc quét mã QR từ điện thoại của khách (VD:
+          LM-8421)</p>
+      </div>
+      <div class="checkin-input-group">
+        <input type="text" id="quickCheckinInput" class="checkin-input" placeholder="Nhập mã (VD: LM-8421)..."
+          onkeydown="if(event.key==='Enter') executeQuickCheckin()">
+        <button class="btn-checkin" onclick="executeQuickCheckin()">
+          <i class="fa-solid fa-check-circle"></i> Check-in Ngay
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 1: DASHBOARD TAB -->
+    <div id="tabDashboard">
+      <!-- 4 KPI CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: #ecfdf5; color: #10b981;">
+            <i class="fa-solid fa-sack-dollar"></i>
+          </div>
+          <div class="kpi-info">
+            <h3 id="kpiRevenue">0 đ</h3>
+            <span>Tổng Doanh Thu Thực Tế</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: #eff6ff; color: #3b82f6;">
+            <i class="fa-solid fa-calendar-days"></i>
+          </div>
+          <div class="kpi-info">
+            <h3 id="kpiTotalBookings">0</h3>
+            <span>Tổng Lượt Đặt Lịch</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: #fefce8; color: #eab308;">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="kpi-info">
+            <h3 id="kpiCompleted">0</h3>
+            <span>Cuộc Hẹn Đã Hoàn Thành</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background: #f5f3ff; color: #8b5cf6;">
+            <i class="fa-solid fa-user-doctor"></i>
+          </div>
+          <div class="kpi-info">
+            <h3 id="kpiActiveStaff">4</h3>
+            <span>Chuyên Viên Đang Trực</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title"><i class="fa-solid fa-chart-column"></i> Doanh Thu Theo Danh Mục Dịch Vụ</div>
+          </div>
+          <div style="height: 280px; position: relative;">
+            <canvas id="categoryRevenueChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="chart-title"><i class="fa-solid fa-chart-line"></i> Xu Hướng Đặt Lịch (7 Ngày Gần Nhất)</div>
+          </div>
+          <div style="height: 280px; position: relative;">
+            <canvas id="bookingTrendChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: BOOKINGS MANAGEMENT TAB -->
+    <div id="tabBookings" class="data-panel">
+      <div class="panel-header">
+        <h3 class="chart-title"><i class="fa-solid fa-list-check"></i> Danh Sách Cuộc Hẹn</h3>
+        <div class="panel-actions">
+          <input type="text" id="bookingSearchInput" class="admin-input" placeholder="Tìm tên khách hoặc SĐT..."
+            oninput="filterBookingsTable()">
+          <select id="bookingStatusFilter" class="admin-select" onchange="filterBookingsTable()">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="confirmed">Đã xác nhận</option>
+            <option value="completed">Đã hoàn thành</option>
+            <option value="pending">Chờ xử lý</option>
+            <option value="cancelled">Đã hủy</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Mã Code</th>
+              <th>Khách Hàng</th>
+              <th>Số Điện Thoại</th>
+              <th>Dịch Vụ</th>
+              <th>Chuyên Viên</th>
+              <th>Ngày & Giờ</th>
+              <th>Chi Phí</th>
+              <th>Trạng Thái</th>
+              <th>Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsTableBody">
+            <!-- Dynamic rows injected here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION 3: SERVICES MANAGEMENT TAB -->
+    <div id="tabServices" class="data-panel" style="display: none;">
+      <div class="panel-header">
+        <h3 class="chart-title"><i class="fa-solid fa-spa"></i> Quản Lý Dịch Vụ Spa</h3>
+        <button class="btn-checkin" style="font-size: 0.88rem; padding: 8px 18px;" onclick="openAddServiceModal()">
+          <i class="fa-solid fa-plus"></i> Thêm Dịch Vụ Mới
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Ảnh</th>
+              <th>Tên Dịch Vụ</th>
+              <th>Giá Tiền</th>
+              <th>Thời Lượng</th>
+              <th>Mô Tả</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="servicesTableBody">
+            <!-- Dynamic services injected here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL THÊM DỊCH VỤ MỚI -->
+  <div id="addServiceModal"
+    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #fff; border-radius: 12px; max-width: 520px; width: 100%; padding: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 1.25rem; color: var(--admin-primary);">Thêm Dịch Vụ Mới</h3>
+        <button onclick="closeAddServiceModal()"
+          style="border: none; background: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <form onsubmit="handleAddServiceSubmit(event)">
+        <div style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Tên dịch vụ
+            (*):</label>
+          <input type="text" id="newServiceName" class="admin-input" style="width: 100%;"
+            placeholder="Ví dụ: Massage bấm huyệt chân thảo mộc" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Danh mục:</label>
+            <select id="newServiceCategory" class="admin-select" style="width: 100%;">
+              <option value="1">Chăm sóc Da & Điều trị</option>
+              <option value="2">Massage & Trị liệu Thư giãn</option>
+              <option value="3">Tóc & Tạo kiểu Cao cấp</option>
+              <option value="4">Nail Care & Spa Thảo dược</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Giá tiền (VNĐ)
+              (*):</label>
+            <input type="number" id="newServicePrice" class="admin-input" style="width: 100%;" placeholder="400000"
+              required>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 14px;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Thời lượng
+              (phút):</label>
+            <input type="number" id="newServiceDuration" class="admin-input" style="width: 100%;" value="60">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">URL Hình
+              ảnh:</label>
+            <input type="url" id="newServiceImage" class="admin-input" style="width: 100%;"
+              placeholder="https://images.unsplash.com/...">
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Mô tả chi
+            tiết:</label>
+          <textarea id="newServiceDesc" class="admin-input" style="width: 100%;" rows="3"
+            placeholder="Mô tả công dụng và quy trình dịch vụ..."></textarea>
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn-action" onclick="closeAddServiceModal()">Hủy</button>
+          <button type="submit" class="btn-checkin" style="padding: 10px 20px;">Lưu Dịch Vụ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  </div> <!-- END #adminDashboard -->
+
+  <script src="js/admin.js"></script>
+</body>
+
+</html>
