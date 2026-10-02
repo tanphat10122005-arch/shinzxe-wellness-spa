@@ -57,9 +57,9 @@ Hệ thống được thiết kế theo mô hình **RESTful Architecture** với
 
 ## 4. KỊCH BẢN THUYẾT TRÌNH DEMO (ĐẠT ĐIỂM 10)
 
-1. **Bước 1:** Trình chiếu trang chủ [http://localhost:3000](http://localhost:3000) $\rightarrow$ Nhấn phím `F12` chuyển sang chế độ Mobile để khoe giao diện tương thích 100% với điện thoại di động.
+1. **Bước 1:** Trình chiếu trang chủ [http://localhost:3000]((https://shinzxespa.onrender.com/)) $\rightarrow$ Nhấn phím `F12` chuyển sang chế độ Mobile để khoe giao diện tương thích 100% với điện thoại di động.
 2. **Bước 2:** Bấm vào widget **"✦ Trợ lý AI Tư Vấn"** ở góc phải $\rightarrow$ Hỏi: *"Mình bị đau mỏi vai gáy do làm văn phòng thì nên chọn gói nào?"* $\rightarrow$ AI trả lời và hiển thị nút **"Đặt gói này ngay"**.
 3. **Bước 3:** Nhấn nút đặt lịch $\rightarrow$ Chọn ngày mai $\rightarrow$ Chọn khung giờ còn trống (giải thích cho giảng viên về cơ chế disable giờ đã trùng) $\rightarrow$ Điền thông tin $\rightarrow$ Bấm Xác nhận.
 4. **Bước 4:** Giao diện hiển thị ngay **Vé hẹn điện tử kèm Mã QR và Mã Code** (VD: `LM-2850`).
-5. **Bước 5:** Mở trang Quản trị [http://localhost:3000/admin.html](http://localhost:3000/admin.html) $\rightarrow$ Cho giảng viên thấy cuộc hẹn vừa tạo xuất hiện ngay ở đầu bảng danh sách.
+5. **Bước 5:** Mở trang Quản trị  $\rightarrow$ Cho giảng viên thấy cuộc hẹn vừa tạo xuất hiện ngay ở đầu bảng danh sách.
 6. **Bước 6:** Nhập mã vừa tạo vào ô **"Quét / Check-in Nhanh Cho Khách"** $\rightarrow$ Bấm Check-in $\rightarrow$ Cuộc hẹn chuyển sang trạng thái "Đã xong" và Biểu đồ Doanh thu lập tức cập nhật số tiền mới!
