@@ -13,7 +13,7 @@
    node server.js
    ```
 3. Truy cập vào trình duyệt:
-   * **Trang Khách hàng (Đặt lịch, Tra cứu vé QR, Chatbot AI):** [http://localhost:3000](http://localhost:3000](https://shinzxespa.onrender.com/)
+   * **Trang Khách hàng (Đặt lịch, Tra cứu vé QR, Chatbot AI):** [(http://localhost:3000](https://shinzxespa.onrender.com/)
    * **Trang Quản trị Admin (Dashboard biểu đồ, Duyệt lịch, Quét QR Check-in):** 
 
 ---
